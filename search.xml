@@ -6,21 +6,11 @@
       <title><![CDATA[开启https小绿锁 let's encrypt]]></title>
       <url>/2018/01/21/let-s-encrypt/</url>
       <content type="html"><![CDATA[<p>HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。即HTTP下加入SSL层，HTTPS的安全基础是SSL，因此加密的详细内容就需要SSL。</p>
-<h6 id="Let’s-Encrypt，是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X-509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。"><a href="#Let’s-Encrypt，是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X-509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。" class="headerlink" title="Let’s Encrypt，是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X.509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。"></a>Let’s Encrypt，是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X.509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。</h6><ul>
-<li><p>获取 let’s encrypt</p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/certbot/certbot.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装ssl证书</p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./certbot-auto certonly --standalone -d example.com --email example@email.com</span><br></pre></td></tr></table></figure>
-<ul>
-<li>certbot-auto renew  重新安装之前存在的ssl证书</li>
-</ul>
-</li>
-<li><p>配置nginx</p>
-  <figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">ssl</span>          <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/cert.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;</span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line">    <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_ciphers</span> ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#双向 ssl 认证</span></span><br><span class="line">    <span class="comment"># ssl_verify_client on;</span></span><br><span class="line">    <span class="comment"># ssl_client_certificate /etc/letsencrypt/live/example.com/cert.pem;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-]]></content>
+<h6 id="Let’s-Encrypt"><a href="#Let’s-Encrypt" class="headerlink" title="Let’s Encrypt"></a>Let’s Encrypt</h6><p>Let’s Encrypt是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X.509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。</p>
+<h6 id="获取-let’s-encrypt"><a href="#获取-let’s-encrypt" class="headerlink" title="获取 let’s encrypt"></a>获取 let’s encrypt</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/certbot/certbot.git</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="安装ssl证书"><a href="#安装ssl证书" class="headerlink" title="安装ssl证书"></a>安装ssl证书</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./certbot-auto certonly --standalone -d example.com --email example@email.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># certbot-auto renew  重新安装之前存在的ssl证书</span></span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h6><pre><code><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">ssl</span>          <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/cert.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;</span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line">    <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_ciphers</span> ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#双向 ssl 认证</span></span><br><span class="line">    <span class="comment"># ssl_verify_client on;</span></span><br><span class="line">    <span class="comment"># ssl_client_certificate /etc/letsencrypt/live/example.com/cert.pem;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</code></pre>]]></content>
       
         <categories>
             
