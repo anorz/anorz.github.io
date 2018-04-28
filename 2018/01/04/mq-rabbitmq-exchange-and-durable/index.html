@@ -28,7 +28,7 @@
     
     <title>
         
-            分类: mq | 
+            消息队列 RabbitMQ -- 交换器类型与消息持久化 | 
         
         Anorz&#39;s Blog
     </title>
@@ -39,7 +39,7 @@
 
     <meta name="format-detection" content="telephone=no"/>
     <meta name="description" itemprop="description" content="">
-    <meta name="keywords" content="anorz.com anorz blog">
+    <meta name="keywords" content="anorz.com anorz blog,rabbitmq queue">
     <meta name="theme-color" content="#607d8b">
 
     <!-- Disable Fucking Bloody Baidu Tranformation -->
@@ -200,7 +200,7 @@
     <!-- WebAPP Icons -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Anorz&#39;s Blog">
-    <meta name="msapplication-starturl" content="http://yoursite.com/categories/mq/">
+    <meta name="msapplication-starturl" content="http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/">
     <meta name="msapplication-navbutton-color" content="#607d8b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Anorz&#39;s Blog">
@@ -215,13 +215,16 @@
     
 
     <!-- The Open Graph protocol -->
-    <meta property="og:url" content="http://yoursite.com/categories/mq/">
+    <meta property="og:url" content="http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="分类: mq | Anorz&#39;s Blog">
+    <meta property="og:title" content="消息队列 RabbitMQ -- 交换器类型与消息持久化 | Anorz&#39;s Blog">
     <meta property="og:image" content="/img/favicon.png">
     <meta property="og:description" content="">
-    
+    <meta property="og:article:tag" content="rabbitmq queue"> 
 
+    
+        <meta property="article:published_time" content="Thu Jan 04 2018 00:00:00 GMT+0800">
+        <meta property="article:modified_time" content="Tue Apr 10 2018 22:30:59 GMT+0800">
     
 
     <!-- The Twitter Card protocol -->
@@ -229,13 +232,43 @@
 
     <!-- Add canonical link for SEO -->
     
-        <link rel="canonical" href="http://yoursite.com/categories/mq/index.html" />
+        <link rel="canonical" href="http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/index.html" />
     
 
     <!-- Structured-data for SEO -->
     
         
 
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": "http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/index.html",
+    "headline": "消息队列 RabbitMQ -- 交换器类型与消息持久化",
+    "datePublished": "Thu Jan 04 2018 00:00:00 GMT+0800",
+    "dateModified": "Tue Apr 10 2018 22:30:59 GMT+0800",
+    "author": {
+        "@type": "Person",
+        "name": "anorz",
+        "image": {
+            "@type": "ImageObject",
+            "url": "/img/header.jpg"
+        },
+        "description": "奔走红尘，莫忘曾经是书生"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Anorz&#39;s Blog",
+        "logo": {
+            "@type":"ImageObject",
+            "url": "/img/favicon.png"
+        }
+    },
+    "keywords": ",rabbitmq queueanorz.com anorz blog",
+    "description": "",
+}
+</script>
 
 
     
@@ -273,155 +306,248 @@
                         </button>
                     
 
-                    <!-- Index Module -->
-<div class="material-index mdl-grid">
-    
-    <div class="locate-thumbnail-symbol"></div>
+                    <!-- Post TOC -->
 
-    <!-- Pin on top -->
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+
+    <!-- Left aligned menu below button -->
+    
+    
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#四种交换器类型"><span class="post-toc-number">1.</span> <span class="post-toc-text">四种交换器类型</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#direct"><span class="post-toc-number">2.</span> <span class="post-toc-text">direct</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#fanout"><span class="post-toc-number">3.</span> <span class="post-toc-text">fanout</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#topic"><span class="post-toc-number">4.</span> <span class="post-toc-text">topic</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#AMQP栈"><span class="post-toc-number">5.</span> <span class="post-toc-text">AMQP栈</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#消费者和生产者到底谁去创建队列？"><span class="post-toc-number">6.</span> <span class="post-toc-text">消费者和生产者到底谁去创建队列？</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#生产者创建消息"><span class="post-toc-number">7.</span> <span class="post-toc-text">生产者创建消息</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#消费者订阅消息"><span class="post-toc-number">8.</span> <span class="post-toc-text">消费者订阅消息</span></a></li></ol>
+    </ul>
     
 
-    <!-- Normal Post -->
-    
-        
-            
-                <!-- Paradox Thumbnail -->
-                <div class="post_entry-module mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col fade out">
-    <!-- Post Thumbnail -->
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
     
         <!-- Custom Thumbnail -->
-        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50 lazy" data-original="/img/exchange-durable.jpg">
+        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50" style="background-image:url(/img/exchange-durable.jpg)">
     
-
-        <!-- Post Title -->
-        <p class="article-headline-p"><a href="/2018/01/04/mq-rabbitmq-exchange-and-durable/">消息队列 RabbitMQ -- 交换器类型与消息持久化</a></p>
-    </div>
-
-    <!-- Post Excerpt -->
-    <div class="mdl-color-text--grey-600 mdl-card__supporting-text post_entry-content">
-        
-            四种...
-        
-        &nbsp;&nbsp;&nbsp;
-        <span>
-            <a href="/2018/01/04/mq-rabbitmq-exchange-and-durable/" target="_self">阅读全文</a>
-        </span>
-    </div>
-    <!-- Post_entry Info-->
-    <div id="post_entry-info">
-        <div id="post_entry-left-info" class="mdl-card__supporting-text meta mdl-color-text--grey-600 ">
-            <!-- Author Avatar -->
-            <div id="author-avatar">
-                <img src="/img/header.jpg" width="44px" height="44px" alt="anorz's avatar">
-            </div>
-            <div>
-                <strong>anorz</strong>
-                <span>1月 04, 2018</span>
-            </div>
+            <p class="article-headline-p">
+                消息队列 RabbitMQ -- 交换器类型与消息持久化
+            </p>
         </div>
-        <div id="post_entry-right-info">
-          
-              <!-- Category -->
-              <span class="post_entry-category">
-                  <a class="post_category-link" href="/categories/mq/">mq</a>
-              </span>
-            
 
-            
 
-            
 
-            <!-- Post Views -->
-            <span class="post_entry-views">
-            </span>
-        </div>
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/header.jpg" width="44px" height="44px" alt="Author Avatar"/>
     </div>
-</div>
-
-            
-            
-        
-    
-        
-            
-                <!-- Paradox Thumbnail -->
-                <div class="post_entry-module mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col fade out">
-    <!-- Post Thumbnail -->
-    
-        <!-- Custom Thumbnail -->
-        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50 lazy" data-original="/img/rabbitmq.gif">
-    
-
-        <!-- Post Title -->
-        <p class="article-headline-p"><a href="/2018/01/03/mq-rabbitmq-introduce/">消息队列 RabbitMQ -- 介绍</a></p>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>anorz</strong>
+        <span>1月 04, 2018</span>
     </div>
 
-    <!-- Post Excerpt -->
-    <div class="mdl-color-text--grey-600 mdl-card__supporting-text post_entry-content">
-        
-            RabbitMQ...
-        
-        &nbsp;&nbsp;&nbsp;
-        <span>
-            <a href="/2018/01/03/mq-rabbitmq-introduce/" target="_self">阅读全文</a>
-        </span>
-    </div>
-    <!-- Post_entry Info-->
-    <div id="post_entry-info">
-        <div id="post_entry-left-info" class="mdl-card__supporting-text meta mdl-color-text--grey-600 ">
-            <!-- Author Avatar -->
-            <div id="author-avatar">
-                <img src="/img/header.jpg" width="44px" height="44px" alt="anorz's avatar">
-            </div>
-            <div>
-                <strong>anorz</strong>
-                <span>1月 03, 2018</span>
-            </div>
-        </div>
-        <div id="post_entry-right-info">
-          
-              <!-- Category -->
-              <span class="post_entry-category">
-                  <a class="post_category-link" href="/categories/mq/">mq</a>
-              </span>
-            
+    <div class="section-spacer"></div>
 
-            
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
 
-            
+    <!-- Qrcode -->
+    
+        <button id="article-functions-qrcode-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">devices other</i>
+    <span class="visuallyhidden">devices other</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-qrcode-button">
+    <li class="mdl-menu__item">在其它设备中阅读本文章</li>
+    
+        <img src="https://pan.baidu.com/share/qrcode?w=246&h=246&url=http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/">
+    
+</ul>
 
-            <!-- Post Views -->
-            <span class="post_entry-views">
-            </span>
-        </div>
-    </div>
-</div>
+    
 
-            
-            
-        
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/rabbitmq-queue/">rabbitmq queue</a>
+    </ul>
+    
+
+    <!-- Share -->
+    
+        <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
     
 
     
 
+    <!-- Share Weibo -->
     
-        <script type="text/ls-javascript" id="thumbnail-script">
-    var randomNum;
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=消息队列 RabbitMQ -- 交换器类型与消息持久化&url=http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/index.html&pic=http://yoursite.com/img/favicon.png&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
 
-    var locatePost = $('.locate-thumbnail-symbol').next();
-    for(var i = 0; i < 10; i++) {
-        randomNum = Math.floor(Math.random() * 0 + 1);
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=消息队列 RabbitMQ -- 交换器类型与消息持久化&url=http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/index.html&via=anorz" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
 
-        locatePost.children('.post_thumbnail-random').attr('id', 'random_thumbnail-'+randomNum);
-        locatePost.children('.post_thumbnail-random').attr('data-original', '/img/random/material-' + randomNum + '.png');
-    $('.post_thumbnail-random').addClass('lazy');
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
 
-        locatePost = locatePost.next();
-    }
-</script>
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com/2018/01/04/mq-rabbitmq-exchange-and-durable/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
 
     
 </div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <h6 id="四种交换器类型"><a href="#四种交换器类型" class="headerlink" title="四种交换器类型"></a>四种交换器类型</h6><p>上章中说到，AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b><br>rabbitmq 服务器会根据路由键将消息从交换器路由到列队，但是它是如何处理投递到多个队列的情况呢？<br>协议中定义的不同类型交换器发挥了作用。<br>一共四种类型： direct、fanout、topic、headers.<br><br></p>
+<h6 id="direct"><a href="#direct" class="headerlink" title="direct"></a>direct</h6><p><img src="/img/direct_exchange.png"></p>
+<pre><code>DirectExchange是RabbitMQ Broker的默认Exchange.
+果然路由键匹配的话，消息就被投递到对应的队列。
+当声明一个队列时，它会自动绑定到默认交换器，并以 队列名 作为路由键。
+</code></pre><h6 id="fanout"><a href="#fanout" class="headerlink" title="fanout"></a>fanout</h6><p><img src="/img/fanout_exchange.png"></p>
+<pre><code>FanoutExchange 
+当你发送一条消息到fanout交换器时，它会把消息投递给所有附加在此交换器上的所有队列。
+</code></pre><h6 id="topic"><a href="#topic" class="headerlink" title="topic"></a>topic</h6><p><img src="/img/topic_exchange.png"></p>
+<pre><code>TopicExchange 
+它使得来自不同源头的消息能够到达同一个队列。
+
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+</code></pre><p>生产者创建消息(消息包含两部分: 有效载荷[payload] 和 标签[label])，然后发布(Publish) 到代理服务器(RabbitMQ)</p>
+<p>消费者连接到代理服务器，并订阅到队列上。当消费者接受到消息时，它只得到了消息的一部分：有效载荷。在消息路由过程中，消息的标签并没有随有效载荷一同传递。<br><b>如果需要明确知道谁生产的AMQP消息的话，就要看生产者是否把消息方信息放入有效载荷中。</b></p>
+<h6 id="AMQP栈"><a href="#AMQP栈" class="headerlink" title="AMQP栈"></a>AMQP栈</h6><p><img src="https://www.rabbitmq.com/img/tutorials/intro/hello-world-example-routing.png"><br>AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b></p>
+<h6 id="消费者和生产者到底谁去创建队列？"><a href="#消费者和生产者到底谁去创建队列？" class="headerlink" title="消费者和生产者到底谁去创建队列？"></a>消费者和生产者到底谁去创建队列？</h6><p><b>如果你不能承担得起消息进入“黑洞”而丢失的话，你的生产者和消费者就都应该尝试去创建队列。</b></p>
+<h6 id="生产者创建消息"><a href="#生产者创建消息" class="headerlink" title="生产者创建消息"></a>生产者创建消息</h6><pre><code><figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/streadway/amqp"</span></span><br><span class="line"><span class="comment">// step 1. 创建 connection</span></span><br><span class="line">conn, err := amqp.Dial(<span class="string">"amqp://guest:guest@127.0.0.1:5672/"</span>)</span><br><span class="line"><span class="comment">// step 2. 获取 (信道)channel</span></span><br><span class="line">channel, err := conn.Channel()</span><br><span class="line"><span class="comment">// step 3. 在信道上声明交换器 exchange</span></span><br><span class="line">channel.ExchangeDeclare(</span><br><span class="line">    <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">    amqp.ExchangeDirect, <span class="comment">// exchange type</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// durable</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// autoDelete</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// internal</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// noWait</span></span><br><span class="line">    <span class="literal">nil</span>,                 <span class="comment">// args amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 4. 声明队列</span></span><br><span class="line">queue, err := ch.QueueDeclare(</span><br><span class="line">        <span class="string">"queue_name"</span>,    <span class="comment">// queue name</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// durable</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// delete when unused</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// exclusive</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// no-wait</span></span><br><span class="line">        <span class="literal">nil</span>,             <span class="comment">// arguments amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 5. 将队列绑定根据路由键绑定到交换器上</span></span><br><span class="line">channel.QueueBind(</span><br><span class="line">    queue.Name,          <span class="comment">// queue name</span></span><br><span class="line">    <span class="string">"route_key"</span>,         <span class="comment">// route key</span></span><br><span class="line">    <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// no-wait</span></span><br><span class="line">    <span class="literal">nil</span>,                 <span class="comment">// arguments amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 6. 将消息发送到交换器上，交换器会根据路由键将消息发送到对应的队列queue</span></span><br><span class="line">channel.Publish(</span><br><span class="line">        <span class="string">"exchange_name"</span>, <span class="comment">// exchange</span></span><br><span class="line">        <span class="string">"route_key"</span>,     <span class="comment">// routing key</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// mandatory</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// immediate</span></span><br><span class="line">        amqp.Publishing&#123; <span class="comment">// message</span></span><br><span class="line">            ContentType: <span class="string">"text/plain"</span>,</span><br><span class="line">            Body:        []<span class="keyword">byte</span>(<span class="string">"hello world"</span>),</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="消费者订阅消息"><a href="#消费者订阅消息" class="headerlink" title="消费者订阅消息"></a>消费者订阅消息</h6><pre><code><figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">   <span class="keyword">import</span> <span class="string">"github.com/streadway/amqp"</span></span><br><span class="line">   <span class="comment">// step 1. 创建 connection</span></span><br><span class="line">   conn, err := amqp.Dial(<span class="string">"amqp://guest:guest@127.0.0.1:5672/"</span>)</span><br><span class="line">   <span class="comment">// step 2. 获取 (信道)channel</span></span><br><span class="line">   channel, err := conn.Channel()</span><br><span class="line">   <span class="comment">// step 3. 在信道上声明交换器 exchange</span></span><br><span class="line">   channel.ExchangeDeclare(</span><br><span class="line">       <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">       amqp.ExchangeDirect, <span class="comment">// exchange type</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// durable</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// autoDelete</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// internal</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// noWait</span></span><br><span class="line">       <span class="literal">nil</span>,                 <span class="comment">// args amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   <span class="comment">// step 4. 声明队列</span></span><br><span class="line">   queue, err := ch.QueueDeclare(</span><br><span class="line">           <span class="string">"queue_name"</span>,    <span class="comment">// queue name</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// durable</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// delete when unused</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// exclusive</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// no-wait</span></span><br><span class="line">           <span class="literal">nil</span>,             <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   <span class="comment">// step 5. 将队列绑定根据路由键绑定到交换器上</span></span><br><span class="line">   channel.QueueBind(</span><br><span class="line">       queue.Name,          <span class="comment">// queue name</span></span><br><span class="line">       <span class="string">"route_key"</span>,         <span class="comment">// route key</span></span><br><span class="line">       <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// no-wait</span></span><br><span class="line">       <span class="literal">nil</span>,                 <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   forever := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">   <span class="comment">// step 6. 在信道上订阅队列</span></span><br><span class="line">   messages, err := channel.Consume(</span><br><span class="line">       queue.Name,           <span class="comment">// queue</span></span><br><span class="line">       <span class="string">""</span>,                   <span class="comment">// consumer</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// autoAck</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// exclusive</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// noLocal ：The noLocal flag is not supported by RabbitMQ.</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// no-wait</span></span><br><span class="line">       <span class="literal">nil</span>,                  <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">  <span class="comment">// 开启一个 goruntine 获取消息内容 </span></span><br><span class="line">   <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">       <span class="keyword">for</span> message := <span class="keyword">range</span> messages &#123;</span><br><span class="line">               log.Printf(<span class="string">"Received a message: %s"</span>, message.Body)</span><br><span class="line">               message.Ack(<span class="literal">true</span>)</span><br><span class="line">       &#125;</span><br><span class="line">&#125;()</span><br><span class="line">   fmt.Println(<span class="string">"Please ctrl+c to stop"</span>)</span><br><span class="line">   &lt;-forever</span><br></pre></td></tr></table></figure>
+</code></pre>
+        
+    
+
+    
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
+    
+        <a href="/2018/03/18/mysql-transaction-isolation/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
+    
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
+    
+        <a href="/2018/01/03/liunx-frp/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
 
 
                     

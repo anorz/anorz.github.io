@@ -63,7 +63,7 @@
     <!-- Import CSS -->
     
         <style id="material_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_css","/css/material.min.css?Z7a72R1E4SxzBKR/WGctOA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
-        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?vN9pkLYQyDpbRE+iWRxFXQ==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?EAL189de9wrpmP4UBk7HgA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
 
         
 
@@ -507,7 +507,7 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2018/01/03/mq-rabbitmq-introduce/" id="post_nav-newer" class="prev-content">
+        <a href="/2018/01/03/mysql-start-error/" id="post_nav-newer" class="prev-content">
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
             </button>
@@ -615,7 +615,7 @@
             </a>
             <ul class="dropdown-menu">
             <li>
-                <a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">3</span></a>
+                <a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">6</span></a>
             </ul>
         </li>
         
@@ -633,7 +633,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                <a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">1</span></a>
+                <a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">2</span></a>
             </ul>
         </li>
         
@@ -766,19 +766,124 @@
 
         <!-- Paradox Footer Right Section -->
 
-        <!--
-        I am glad you use this theme, the development is no so easy, I hope you can keep the copyright.
-        It will not impact the appearance and can give developers a lot of support :)
-
-        很高兴您使用该主题，开发不易，希望您可以保留一下版权声明。
-        它不会影响美观并可以给开发者很大的支持。 :)
-        -->
-
         <div class="mdl-mini-footer--right-section">
             <div>
-                <div class="footer-develop-div">Powered by <a href="https://hexo.io" target="_blank" class="footer-develop-a">anorz</a></div>
+                <div class="footer-develop-div">Powered by <a href="#" target="_blank" class="footer-develop-a">anorz</a></div>
             </div>
         </div>
+
+        <script>
+  var tagEle = "querySelectorAll" in document ? document.querySelectorAll(".tag") : getClass("tag"),
+      paper = "querySelectorAll" in document ? document.querySelector(".tagBall") : getClass("tagBall")[0];
+
+      RADIUS = 100,
+      fallLength = 1000,
+      tags = [],
+      angleX = Math.PI / 1000,
+      angleY = Math.PI / 1000,
+      CX = paper.offsetWidth / 2,
+      CY = paper.offsetHeight / 2,
+      EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
+      EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
+  function getClass(className) {
+    var ele = document.getElementsByTagName("*");
+    var classEle = [];
+    for (var i = 0; i < ele.length; i++) {
+      var cn = ele[i].className;
+      if (cn === className) {
+        classEle.push(ele[i]);
+      }
+    }
+    return classEle;
+  }
+  function innit() {
+    for (var i = 0; i < tagEle.length; i++) {
+      var a, b;
+      var k = -1 + (2 * (i + 1) - 1) / tagEle.length;
+      var a = Math.acos(k);
+      var b = a * Math.sqrt(tagEle.length * Math.PI);
+      var x = RADIUS * Math.sin(a) * Math.cos(b);
+      var y = RADIUS * Math.sin(a) * Math.sin(b);
+      var z = RADIUS * Math.cos(a);
+      var t = new tag(tagEle[i], x, y, z);
+      tagEle[i].style.color = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
+      tags.push(t);
+      t.move();
+    }
+  }
+  Array.prototype.forEach = function(callback) {
+    for (var i = 0; i < this.length; i++) {
+      callback.call(this[i]);
+    }
+  }
+  function animate() {
+    rotateX();
+    rotateY();
+    tags.forEach(function() {
+      this.move();
+    });
+    requestAnimationFrame(animate);
+  }
+  if ("addEventListener" in window) {
+    paper.addEventListener("mousemove", function(event) {
+      var x = event.clientX - EX - CX;
+      var y = event.clientY - EY - CY;
+      // 转速
+      angleY = x * 0.00002;
+      angleX = y * 0.00002;
+    });
+  }
+  else {
+    paper.attachEvent("onmousemove", function(event) {
+      var x = event.clientX - EX - CX;
+      var y = event.clientY - EY - CY;
+       // 转速
+      angleY = x * 0.00002;
+      angleX = y * 0.00002;
+    });
+  }
+  function rotateX() {
+    var cos = Math.cos(angleX);
+    var sin = Math.sin(angleX);
+    tags.forEach(function() {
+      var y1 = this.y * cos - this.z * sin;
+      var z1 = this.z * cos + this.y * sin;
+      this.y = y1;
+      this.z = z1;
+    })
+  }
+  function rotateY() {
+    var cos = Math.cos(angleY);
+    var sin = Math.sin(angleY);
+    tags.forEach(function() {
+      var x1 = this.x * cos - this.z * sin;
+      var z1 = this.z * cos + this.x * sin;
+      this.x = x1;
+      this.z = z1;
+    })
+  }
+  var tag = function(ele, x, y, z) {
+    this.ele = ele;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+  tag.prototype = {
+    move: function() {
+      var scale = fallLength / (fallLength - this.z);
+      var alpha = (this.z + RADIUS) / (2 * RADIUS);
+      var left = this.x + CX - this.ele.offsetWidth / 2 + "px";
+      var top = this.y + CY - this.ele.offsetHeight / 2 + "px";
+      var transform = 'translate(' + left + ', ' + top + ') scale(' + scale + ')';
+      this.ele.style.opacity = alpha + 0.5;
+      this.ele.style.zIndex = parseInt(scale * 100);
+      this.ele.style.transform = transform;
+      this.ele.style.webkitTransform = transform;
+    }
+  }
+  innit();
+  animate();
+</script>
     
 </footer>
 
@@ -816,6 +921,7 @@
         $('.fade').removeClass('out');
     }, 800);
 </script>
+
 
 
 

@@ -1,70 +1,488 @@
-<?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-    
-    <entry>
-      <title><![CDATA[mysql 四种事务隔离级别]]></title>
-      <url>/2018/03/18/mysql-transaction-isolation/</url>
-      <content type="html"></content>
-      
-        <categories>
-            
-            <category> mysql </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> rabbitmq queue </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[消息队列 RabbitMQ -- 交换器类型与消息持久化]]></title>
-      <url>/2018/01/04/mq-rabbitmq-exchange-and-durable/</url>
-      <content type="html"><![CDATA[<h6 id="四种交换器类型"><a href="#四种交换器类型" class="headerlink" title="四种交换器类型"></a>四种交换器类型</h6><p>上章中说到，AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b><br>rabbitmq 服务器会根据路由键将消息从交换器路由到列队，但是它是如何处理投递到多个队列的情况呢？<br>协议中定义的不同类型交换器发挥了作用。<br>一共四种类型： direct、fanout、topic、headers.<br><br></p>
-<h6 id="direct"><a href="#direct" class="headerlink" title="direct"></a>direct</h6><p><img src="/img/direct_exchange.png"></p>
-<pre><code>DirectExchange是RabbitMQ Broker的默认Exchange.
-果然路由键匹配的话，消息就被投递到对应的队列。
-当声明一个队列时，它会自动绑定到默认交换器，并以 队列名 作为路由键。
-</code></pre><h6 id="fanout"><a href="#fanout" class="headerlink" title="fanout"></a>fanout</h6><p><img src="/img/fanout_exchange.png"></p>
-<pre><code>FanoutExchange 
-当你发送一条消息到fanout交换器时，它会把消息投递给所有附加在此交换器上的所有队列。
-</code></pre><h6 id="topic"><a href="#topic" class="headerlink" title="topic"></a>topic</h6><p><img src="/img/topic_exchange.png"></p>
-<pre><code>TopicExchange 
-它使得来自不同源头的消息能够到达同一个队列。
+<!DOCTYPE html>
+<html style="display: none;" lang="zh">
+    <head>
+    <meta charset="utf-8">
 
-<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
-</code></pre><p>生产者创建消息(消息包含两部分: 有效载荷[payload] 和 标签[label])，然后发布(Publish) 到代理服务器(RabbitMQ)</p>
-<p>消费者连接到代理服务器，并订阅到队列上。当消费者接受到消息时，它只得到了消息的一部分：有效载荷。在消息路由过程中，消息的标签并没有随有效载荷一同传递。<br><b>如果需要明确知道谁生产的AMQP消息的话，就要看生产者是否把消息方信息放入有效载荷中。</b></p>
-<h6 id="AMQP栈"><a href="#AMQP栈" class="headerlink" title="AMQP栈"></a>AMQP栈</h6><p><img src="https://www.rabbitmq.com/img/tutorials/intro/hello-world-example-routing.png"><br>AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b></p>
-<h6 id="消费者和生产者到底谁去创建队列？"><a href="#消费者和生产者到底谁去创建队列？" class="headerlink" title="消费者和生产者到底谁去创建队列？"></a>消费者和生产者到底谁去创建队列？</h6><p><b>如果你不能承担得起消息进入“黑洞”而丢失的话，你的生产者和消费者就都应该尝试去创建队列。</b></p>
-<h6 id="生产者创建消息"><a href="#生产者创建消息" class="headerlink" title="生产者创建消息"></a>生产者创建消息</h6><pre><code><figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/streadway/amqp"</span></span><br><span class="line"><span class="comment">// step 1. 创建 connection</span></span><br><span class="line">conn, err := amqp.Dial(<span class="string">"amqp://guest:guest@127.0.0.1:5672/"</span>)</span><br><span class="line"><span class="comment">// step 2. 获取 (信道)channel</span></span><br><span class="line">channel, err := conn.Channel()</span><br><span class="line"><span class="comment">// step 3. 在信道上声明交换器 exchange</span></span><br><span class="line">channel.ExchangeDeclare(</span><br><span class="line">    <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">    amqp.ExchangeDirect, <span class="comment">// exchange type</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// durable</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// autoDelete</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// internal</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// noWait</span></span><br><span class="line">    <span class="literal">nil</span>,                 <span class="comment">// args amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 4. 声明队列</span></span><br><span class="line">queue, err := ch.QueueDeclare(</span><br><span class="line">        <span class="string">"queue_name"</span>,    <span class="comment">// queue name</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// durable</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// delete when unused</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// exclusive</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// no-wait</span></span><br><span class="line">        <span class="literal">nil</span>,             <span class="comment">// arguments amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 5. 将队列绑定根据路由键绑定到交换器上</span></span><br><span class="line">channel.QueueBind(</span><br><span class="line">    queue.Name,          <span class="comment">// queue name</span></span><br><span class="line">    <span class="string">"route_key"</span>,         <span class="comment">// route key</span></span><br><span class="line">    <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// no-wait</span></span><br><span class="line">    <span class="literal">nil</span>,                 <span class="comment">// arguments amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 6. 将消息发送到交换器上，交换器会根据路由键将消息发送到对应的队列queue</span></span><br><span class="line">channel.Publish(</span><br><span class="line">        <span class="string">"exchange_name"</span>, <span class="comment">// exchange</span></span><br><span class="line">        <span class="string">"route_key"</span>,     <span class="comment">// routing key</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// mandatory</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// immediate</span></span><br><span class="line">        amqp.Publishing&#123; <span class="comment">// message</span></span><br><span class="line">            ContentType: <span class="string">"text/plain"</span>,</span><br><span class="line">            Body:        []<span class="keyword">byte</span>(<span class="string">"hello world"</span>),</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="消费者订阅消息"><a href="#消费者订阅消息" class="headerlink" title="消费者订阅消息"></a>消费者订阅消息</h6><pre><code><figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">   <span class="keyword">import</span> <span class="string">"github.com/streadway/amqp"</span></span><br><span class="line">   <span class="comment">// step 1. 创建 connection</span></span><br><span class="line">   conn, err := amqp.Dial(<span class="string">"amqp://guest:guest@127.0.0.1:5672/"</span>)</span><br><span class="line">   <span class="comment">// step 2. 获取 (信道)channel</span></span><br><span class="line">   channel, err := conn.Channel()</span><br><span class="line">   <span class="comment">// step 3. 在信道上声明交换器 exchange</span></span><br><span class="line">   channel.ExchangeDeclare(</span><br><span class="line">       <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">       amqp.ExchangeDirect, <span class="comment">// exchange type</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// durable</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// autoDelete</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// internal</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// noWait</span></span><br><span class="line">       <span class="literal">nil</span>,                 <span class="comment">// args amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   <span class="comment">// step 4. 声明队列</span></span><br><span class="line">   queue, err := ch.QueueDeclare(</span><br><span class="line">           <span class="string">"queue_name"</span>,    <span class="comment">// queue name</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// durable</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// delete when unused</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// exclusive</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// no-wait</span></span><br><span class="line">           <span class="literal">nil</span>,             <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   <span class="comment">// step 5. 将队列绑定根据路由键绑定到交换器上</span></span><br><span class="line">   channel.QueueBind(</span><br><span class="line">       queue.Name,          <span class="comment">// queue name</span></span><br><span class="line">       <span class="string">"route_key"</span>,         <span class="comment">// route key</span></span><br><span class="line">       <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// no-wait</span></span><br><span class="line">       <span class="literal">nil</span>,                 <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   forever := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">   <span class="comment">// step 6. 在信道上订阅队列</span></span><br><span class="line">   messages, err := channel.Consume(</span><br><span class="line">       queue.Name,           <span class="comment">// queue</span></span><br><span class="line">       <span class="string">""</span>,                   <span class="comment">// consumer</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// autoAck</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// exclusive</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// noLocal ：The noLocal flag is not supported by RabbitMQ.</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// no-wait</span></span><br><span class="line">       <span class="literal">nil</span>,                  <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">  <span class="comment">// 开启一个 goruntine 获取消息内容 </span></span><br><span class="line">   <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">       <span class="keyword">for</span> message := <span class="keyword">range</span> messages &#123;</span><br><span class="line">               log.Printf(<span class="string">"Received a message: %s"</span>, message.Body)</span><br><span class="line">               message.Ack(<span class="literal">true</span>)</span><br><span class="line">       &#125;</span><br><span class="line">&#125;()</span><br><span class="line">   fmt.Println(<span class="string">"Please ctrl+c to stop"</span>)</span><br><span class="line">   &lt;-forever</span><br></pre></td></tr></table></figure>
-</code></pre>]]></content>
-      
-        <categories>
-            
-            <category> mq </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> rabbitmq queue </tag>
-            
-        </tags>
-        
-    </entry>
+    <!-- dns prefetch -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Meta & Info -->
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!-- Title -->
     
-    <entry>
-      <title><![CDATA[内网穿透工具 - frp]]></title>
-      <url>/2018/01/03/liunx-frp/</url>
-      <content type="html"><![CDATA[<p><a href="https://travis-ci.org/fatedier/frp" target="_blank" rel="noopener"><img src="https://travis-ci.org/fatedier/frp.svg?branch=master" alt="Build Status"></a></p>
+    <title>
+        
+            内网穿透工具 - frp | 
+        
+        Anorz&#39;s Blog
+    </title>
+
+    <!-- Favicons -->
+    <link rel="icon shortcut" type="image/ico" href="/img/favicon.png">
+    <link rel="icon" href="/img/favicon.png">
+
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="description" itemprop="description" content="">
+    <meta name="keywords" content="anorz.com anorz blog,frp">
+    <meta name="theme-color" content="#607d8b">
+
+    <!-- Disable Fucking Bloody Baidu Tranformation -->
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/css/ie-blocker.css">
+
+        
+            <script src="/js/ie-blocker.zhCN.js"></script>
+        
+    <![endif]-->
+
+    <!-- Import lsloader -->
+    <script>(function(){window.lsloader={jsRunSequence:[],jsnamemap:{},cssnamemap:{}};lsloader.removeLS=function(a){try{localStorage.removeItem(a)}catch(b){}};lsloader.setLS=function(a,c){try{localStorage.setItem(a,c)}catch(b){}};lsloader.getLS=function(a){var c="";try{c=localStorage.getItem(a)}catch(b){c=""}return c};versionString="/*"+(window.materialVersion||"unknownVersion")+"*/";lsloader.clean=function(){try{var b=[];for(var a=0;a<localStorage.length;a++){b.push(localStorage.key(a))}b.forEach(function(e){var f=lsloader.getLS(e);if(window.oldVersion){var d=window.oldVersion.reduce(function(g,h){return g||f.indexOf("/*"+h+"*/")!==-1},false);if(d){lsloader.removeLS(e)}}})}catch(c){}};lsloader.clean();lsloader.load=function(f,a,b,d){if(typeof b==="boolean"){d=b;b=undefined}d=d||false;b=b||function(){};var e;e=this.getLS(f);if(e&&e.indexOf(versionString)===-1){this.removeLS(f);this.requestResource(f,a,b,d);return}if(e){var c=e.split(versionString)[0];if(c!=a){console.log("reload:"+a);this.removeLS(f);this.requestResource(f,a,b,d);return}e=e.split(versionString)[1];if(d){this.jsRunSequence.push({name:f,code:e});this.runjs(a,f,e)}else{document.getElementById(f).appendChild(document.createTextNode(e));b()}}else{this.requestResource(f,a,b,d)}};lsloader.requestResource=function(b,e,a,c){var d=this;if(c){this.iojs(e,b,function(h,f,g){d.setLS(f,h+versionString+g);d.runjs(h,f,g)})}else{this.iocss(e,b,function(f){document.getElementById(b).appendChild(document.createTextNode(f));d.setLS(b,e+versionString+f)},a)}};lsloader.iojs=function(d,b,g){var a=this;a.jsRunSequence.push({name:b,code:""});try{var f=new XMLHttpRequest();f.open("get",d,true);f.onreadystatechange=function(){if(f.readyState==4){if((f.status>=200&&f.status<300)||f.status==304){if(f.response!=""){g(d,b,f.response);return}}a.jsfallback(d,b)}};f.send(null)}catch(c){a.jsfallback(d,b)}};lsloader.iocss=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.iofonts=function(f,c,h,a){var b=this;try{var g=new XMLHttpRequest();g.open("get",f,true);g.onreadystatechange=function(){if(g.readyState==4){if((g.status>=200&&g.status<300)||g.status==304){if(g.response!=""){h(g.response);a();return}}b.cssfallback(f,c,a)}};g.send(null)}catch(d){b.cssfallback(f,c,a)}};lsloader.runjs=function(f,c,e){if(!!c&&!!e){for(var b in this.jsRunSequence){if(this.jsRunSequence[b].name==c){this.jsRunSequence[b].code=e}}}if(!!this.jsRunSequence[0]&&!!this.jsRunSequence[0].code&&this.jsRunSequence[0].status!="failed"){var a=document.createElement("script");a.appendChild(document.createTextNode(this.jsRunSequence[0].code));a.type="text/javascript";document.getElementsByTagName("head")[0].appendChild(a);this.jsRunSequence.shift();if(this.jsRunSequence.length>0){this.runjs()}}else{if(!!this.jsRunSequence[0]&&this.jsRunSequence[0].status=="failed"){var d=this;var a=document.createElement("script");a.src=this.jsRunSequence[0].path;a.type="text/javascript";this.jsRunSequence[0].status="loading";a.onload=function(){d.jsRunSequence.shift();if(d.jsRunSequence.length>0){d.runjs()}};document.body.appendChild(a)}}};lsloader.tagLoad=function(b,a){this.jsRunSequence.push({name:a,code:"",path:b,status:"failed"});this.runjs()};lsloader.jsfallback=function(c,b){if(!!this.jsnamemap[b]){return}else{this.jsnamemap[b]=b}for(var a in this.jsRunSequence){if(this.jsRunSequence[a].name==b){this.jsRunSequence[a].code="";this.jsRunSequence[a].status="failed";this.jsRunSequence[a].path=c}}this.runjs()};lsloader.cssfallback=function(e,c,b){if(!!this.cssnamemap[c]){return}else{this.cssnamemap[c]=1}var d=document.createElement("link");d.type="text/css";d.href=e;d.rel="stylesheet";d.onload=d.onerror=b;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(d,a)};lsloader.runInlineScript=function(c,b){var a=document.getElementById(b).innerText;this.jsRunSequence.push({name:c,code:a});this.runjs()}})();</script>
+
+    <!-- Import queue -->
+    <script>function Queue(){this.dataStore=[];this.offer=b;this.poll=d;this.execNext=a;this.debug=false;this.startDebug=c;function b(e){if(this.debug){console.log("Offered a Queued Function.")}if(typeof e==="function"){this.dataStore.push(e)}else{console.log("You must offer a function.")}}function d(){if(this.debug){console.log("Polled a Queued Function.")}return this.dataStore.shift()}function a(){var e=this.poll();if(e!==undefined){if(this.debug){console.log("Run a Queued Function.")}e()}}function c(){this.debug=true}}var queue=new Queue();</script>
+
+    <!-- Import CSS -->
+    
+        <style id="material_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_css","/css/material.min.css?Z7a72R1E4SxzBKR/WGctOA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?EAL189de9wrpmP4UBk7HgA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+        
+
+    
+
+    
+
+    <!-- Config CSS -->
+
+<!-- Other Styles -->
+<style>
+  body, html {
+    font-family: Roboto, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    overflow-x: hidden !important;
+  }
+  
+  code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  a {
+    color: #00838F;
+  }
+
+  .mdl-card__media,
+  #search-label,
+  #search-form-label:after,
+  #scheme-Paradox .hot_tags-count,
+  #scheme-Paradox .sidebar_archives-count,
+  #scheme-Paradox .sidebar-colored .sidebar-header,
+  #scheme-Paradox .sidebar-colored .sidebar-badge{
+    background-color: #607d8b !important;
+  }
+
+  /* Sidebar User Drop Down Menu Text Color */
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:hover,
+  #scheme-Paradox .sidebar-colored .sidebar-nav>.dropdown>.dropdown-menu>li>a:focus {
+    color: #607d8b !important;
+  }
+
+  #post_entry-right-info,
+  .sidebar-colored .sidebar-nav li:hover > a,
+  .sidebar-colored .sidebar-nav li:hover > a i,
+  .sidebar-colored .sidebar-nav li > a:hover,
+  .sidebar-colored .sidebar-nav li > a:hover i,
+  .sidebar-colored .sidebar-nav li > a:focus i,
+  .sidebar-colored .sidebar-nav > .open > a,
+  .sidebar-colored .sidebar-nav > .open > a:hover,
+  .sidebar-colored .sidebar-nav > .open > a:focus,
+  #ds-reset #ds-ctx .ds-ctx-entry .ds-ctx-head a {
+    color: #607d8b !important;
+  }
+
+  .toTop {
+    background: #757575 !important;
+  }
+
+  .material-layout .material-post>.material-nav,
+  .material-layout .material-index>.material-nav,
+  .material-nav a {
+    color: #757575;
+  }
+
+  #scheme-Paradox .MD-burger-layer {
+    background-color: #757575;
+  }
+
+  #scheme-Paradox #post-toc-trigger-btn {
+    color: #757575;
+  }
+
+  .post-toc a:hover {
+    color: #00838F;
+    text-decoration: underline;
+  }
+
+</style>
+
+
+<!-- Theme Background Related-->
+
+    <style>
+      body{
+        background-color: #F5F5F5;
+      }
+
+      /* blog_info bottom background */
+      #scheme-Paradox .material-layout .something-else .mdl-card__supporting-text{
+        background-color: #fff;
+      }
+    </style>
+
+
+
+
+<!-- Fade Effect -->
+
+    <style>
+      .fade {
+        transition: all 800ms linear;
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        -o-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+
+      .fade.out{
+        opacity: 0;
+      }
+    </style>
+
+
+<!-- Import Font -->
+<!-- Import Roboto -->
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+
+<!-- Import Material Icons -->
+
+
+    <style id="material_icons"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_icons","/css/material-icons.css?pqhB/Rd/ab0H2+kZp0RDmw==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+
+
+
+
+    <!-- Import jQuery -->
+    
+        <script>lsloader.load("jq_js","/js/jquery.min.js?qcusAULNeBksqffqUM2+Ig==", true)</script>
+    
+
+    <!-- WebAPP Icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Anorz&#39;s Blog">
+    <meta name="msapplication-starturl" content="http://yoursite.com/2018/01/03/liunx-frp/">
+    <meta name="msapplication-navbutton-color" content="#607d8b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Anorz&#39;s Blog">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="/img/favicon.png">
+
+    <!-- Site Verification -->
+    
+    <meta name="baidu-site-verification" content="emivPm5vaX" />
+
+    <!-- RSS -->
+    
+
+    <!-- The Open Graph protocol -->
+    <meta property="og:url" content="http://yoursite.com/2018/01/03/liunx-frp/">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="内网穿透工具 - frp | Anorz&#39;s Blog">
+    <meta property="og:image" content="/img/favicon.png">
+    <meta property="og:description" content="">
+    <meta property="og:article:tag" content="frp"> 
+
+    
+        <meta property="article:published_time" content="Wed Jan 03 2018 00:00:00 GMT+0800">
+        <meta property="article:modified_time" content="Tue Apr 10 2018 22:30:53 GMT+0800">
+    
+
+    <!-- The Twitter Card protocol -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Add canonical link for SEO -->
+    
+        <link rel="canonical" href="http://yoursite.com/2018/01/03/liunx-frp/index.html" />
+    
+
+    <!-- Structured-data for SEO -->
+    
+        
+
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": "http://yoursite.com/2018/01/03/liunx-frp/index.html",
+    "headline": "内网穿透工具 - frp",
+    "datePublished": "Wed Jan 03 2018 00:00:00 GMT+0800",
+    "dateModified": "Tue Apr 10 2018 22:30:53 GMT+0800",
+    "author": {
+        "@type": "Person",
+        "name": "anorz",
+        "image": {
+            "@type": "ImageObject",
+            "url": "/img/header.jpg"
+        },
+        "description": "奔走红尘，莫忘曾经是书生"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Anorz&#39;s Blog",
+        "logo": {
+            "@type":"ImageObject",
+            "url": "/img/favicon.png"
+        }
+    },
+    "keywords": ",frpanorz.com anorz blog",
+    "description": "",
+}
+</script>
+
+
+    
+
+    <!-- Analytics -->
+    
+    
+    
+        <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1272772973&web_id=1272772973" language="JavaScript"></script>
+</div>
+    
+
+    <!-- Custom Head -->
+    
+
+<link rel="stylesheet" href="/css/prism-vs.css" type="text/css"></head>
+
+
+    
+        <body id="scheme-Paradox" class="lazy">
+            <div class="material-layout  mdl-js-layout has-drawer is-upgraded">
+                
+
+                <!-- Main Container -->
+                <main class="material-layout__content" id="main">
+
+                    <!-- Top Anchor -->
+                    <div id="top"></div>
+
+                    
+                        <!-- Hamburger Button -->
+                        <button class="MD-burger-icon sidebar-toggle">
+                            <span class="MD-burger-layer"></span>
+                        </button>
+                    
+
+                    <!-- Post TOC -->
+
+    
+    <!-- Back Button -->
+    <!--
+    <div class="material-back" id="backhome-div" tabindex="0">
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+           href="#" onclick="window.history.back();return false;"
+           target="_self"
+           role="button"
+           data-upgraded=",MaterialButton,MaterialRipple">
+            <i class="material-icons" role="presentation">arrow_back</i>
+            <span class="mdl-button__ripple-container">
+                <span class="mdl-ripple"></span>
+            </span>
+        </a>
+    </div>
+    -->
+
+
+    <!-- Left aligned menu below button -->
+    
+    
+    <button id="post-toc-trigger-btn"
+        class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">format_list_numbered</i>
+    </button>
+
+    <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#目录"><span class="post-toc-number">1.</span> <span class="post-toc-text">目录</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#frp-的作用"><span class="post-toc-number">2.</span> <span class="post-toc-text">frp 的作用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#开发状态"><span class="post-toc-number">3.</span> <span class="post-toc-text">开发状态</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#使用示例"><span class="post-toc-number">4.</span> <span class="post-toc-text">使用示例</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#通过-ssh-访问公司内网机器"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">通过 ssh 访问公司内网机器</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#通过自定义域名访问部署于内网的-web-服务"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">通过自定义域名访问部署于内网的 web 服务</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#转发-DNS-查询请求"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">转发 DNS 查询请求</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#转发-Unix域套接字"><span class="post-toc-number">4.4.</span> <span class="post-toc-text">转发 Unix域套接字</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#对外提供简单的文件访问服务"><span class="post-toc-number">4.5.</span> <span class="post-toc-text">对外提供简单的文件访问服务</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#安全地暴露内网服务"><span class="post-toc-number">4.6.</span> <span class="post-toc-text">安全地暴露内网服务</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#点对点内网穿透"><span class="post-toc-number">4.7.</span> <span class="post-toc-text">点对点内网穿透</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#通过-frpc-所在机器访问外网"><span class="post-toc-number">4.8.</span> <span class="post-toc-text">通过 frpc 所在机器访问外网</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#功能说明"><span class="post-toc-number">5.</span> <span class="post-toc-text">功能说明</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#配置文件"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">配置文件</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Dashboard"><span class="post-toc-number">5.2.</span> <span class="post-toc-text">Dashboard</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#身份验证"><span class="post-toc-number">5.3.</span> <span class="post-toc-text">身份验证</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#加密与压缩"><span class="post-toc-number">5.4.</span> <span class="post-toc-text">加密与压缩</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#客户端热加载配置文件"><span class="post-toc-number">5.5.</span> <span class="post-toc-text">客户端热加载配置文件</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#客户端查看代理状态"><span class="post-toc-number">5.6.</span> <span class="post-toc-text">客户端查看代理状态</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#特权模式"><span class="post-toc-number">5.7.</span> <span class="post-toc-text">特权模式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#端口白名单"><span class="post-toc-number">5.7.1.</span> <span class="post-toc-text">端口白名单</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#TCP-多路复用"><span class="post-toc-number">5.8.</span> <span class="post-toc-text">TCP 多路复用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#底层通信可选-kcp-协议"><span class="post-toc-number">5.9.</span> <span class="post-toc-text">底层通信可选 kcp 协议</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#连接池"><span class="post-toc-number">5.10.</span> <span class="post-toc-text">连接池</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#修改-Host-Header"><span class="post-toc-number">5.11.</span> <span class="post-toc-text">修改 Host Header</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#获取用户真实-IP"><span class="post-toc-number">5.12.</span> <span class="post-toc-text">获取用户真实 IP</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#通过密码保护你的-web-服务"><span class="post-toc-number">5.13.</span> <span class="post-toc-text">通过密码保护你的 web 服务</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#自定义二级域名"><span class="post-toc-number">5.14.</span> <span class="post-toc-text">自定义二级域名</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#URL-路由"><span class="post-toc-number">5.15.</span> <span class="post-toc-text">URL 路由</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#通过代理连接-frps"><span class="post-toc-number">5.16.</span> <span class="post-toc-text">通过代理连接 frps</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#范围端口映射"><span class="post-toc-number">5.17.</span> <span class="post-toc-text">范围端口映射</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#插件"><span class="post-toc-number">5.18.</span> <span class="post-toc-text">插件</span></a></li></ol></li></ol>
+    </ul>
+    
+
+
+
+
+<!-- Layouts -->
+
+    <!-- Post Module -->
+    <div class="material-post_container">
+
+        <div class="material-post mdl-grid">
+            <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+
+                <!-- Post Header(Thumbnail & Title) -->
+                
+    <!-- Paradox Post Header -->
+    
+        <!-- Custom Thumbnail -->
+        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50" style="background-image:url(/img/frp.jpeg)">
+    
+            <p class="article-headline-p">
+                内网穿透工具 - frp
+            </p>
+        </div>
+
+
+
+
+
+                
+                    <!-- Paradox Post Info -->
+                    <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+
+    <!-- Author Avatar -->
+    <div id="author-avatar">
+        <img src="/img/header.jpg" width="44px" height="44px" alt="Author Avatar"/>
+    </div>
+    <!-- Author Name & Date -->
+    <div>
+        <strong>anorz</strong>
+        <span>1月 03, 2018</span>
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- Favorite -->
+    <!--
+        <button id="article-functions-like-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon btn-like">
+            <i class="material-icons" role="presentation">favorite</i>
+            <span class="visuallyhidden">favorites</span>
+        </button>
+    -->
+
+    <!-- Qrcode -->
+    
+        <button id="article-functions-qrcode-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">devices other</i>
+    <span class="visuallyhidden">devices other</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-qrcode-button">
+    <li class="mdl-menu__item">在其它设备中阅读本文章</li>
+    
+        <img src="https://pan.baidu.com/share/qrcode?w=246&h=246&url=http://yoursite.com/2018/01/03/liunx-frp/">
+    
+</ul>
+
+    
+
+    <!-- Tags (bookmark) -->
+    
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/frp/">frp</a>
+    </ul>
+    
+
+    <!-- Share -->
+    
+        <button id="article-fuctions-share-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+    <i class="material-icons" role="presentation">share</i>
+    <span class="visuallyhidden">share</span>
+</button>
+<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-fuctions-share-button">
+    
+
+    
+
+    <!-- Share Weibo -->
+    
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=内网穿透工具 - frp&url=http://yoursite.com/2018/01/03/liunx-frp/index.html&pic=http://yoursite.com/img/favicon.png&searchPic=false&style=simple" target="_blank">
+            <li class="mdl-menu__item">
+                分享到微博
+            </li>
+        </a>
+    
+
+    <!-- Share Twitter -->
+    
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=内网穿透工具 - frp&url=http://yoursite.com/2018/01/03/liunx-frp/index.html&via=anorz" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Twitter
+            </li>
+        </a>
+    
+
+    <!-- Share Facebook -->
+    
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2018/01/03/liunx-frp/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Facebook
+            </li>
+        </a>
+    
+
+    <!-- Share Google+ -->
+    
+        <a class="post_share-link" href="https://plus.google.com/share?url=http://yoursite.com/2018/01/03/liunx-frp/index.html" target="_blank">
+            <li class="mdl-menu__item">
+                分享到 Google+
+            </li>
+        </a>
+    
+
+    <!-- Share LinkedIn -->
+    
+
+    <!-- Share QQ -->
+    
+
+    <!-- Share Telegram -->
+    
+</ul>
+
+    
+</div>
+
+                
+
+                <!-- Post Content -->
+                <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
+    
+        <p><a href="https://travis-ci.org/fatedier/frp" target="_blank" rel="noopener"><img src="https://travis-ci.org/fatedier/frp.svg?branch=master" alt="Build Status"></a></p>
 <p>frp 是一个可用于内网穿透的高性能的反向代理应用，支持 tcp, udp, http, https 协议。</p>
 <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><!-- vim-markdown-toc GFM -->
 <ul>
@@ -323,108 +741,519 @@
 <p>使用 <strong>http_proxy</strong> 插件的示例:</p>
 <figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="comment"># frpc.ini</span></span><br><span class="line"><span class="section">[http_proxy]</span></span><br><span class="line"><span class="attr">type</span> = tcp</span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">6000</span></span><br><span class="line"><span class="attr">plugin</span> = http_proxy</span><br><span class="line"><span class="attr">plugin_http_user</span> = abc</span><br><span class="line"><span class="attr">plugin_http_passwd</span> = abc</span><br></pre></td></tr></table></figure>
 <p><code>plugin_http_user</code> 和 <code>plugin_http_passwd</code> 即为 <code>http_proxy</code> 插件可选的配置参数。</p>
-]]></content>
-      
-        <categories>
-            
-            <category> linux </category>
-            
-        </categories>
+
         
-        
-        <tags>
-            
-            <tag> frp </tag>
-            
-        </tags>
-        
-    </entry>
     
-    <entry>
-      <title><![CDATA[消息队列 RabbitMQ -- 介绍]]></title>
-      <url>/2018/01/03/mq-rabbitmq-introduce/</url>
-      <content type="html"><![CDATA[<p><a href="https://www.rabbitmq.org" target="_blank" rel="noopener">RabbitMQ</a> 是除了 Qpid 之外， 唯一实现了AMQP（高级消息协议：Advanced Message Queue Protocol）标准的代理服务器。<br>虽然AMQP像邮箱那样为离线消费者存储消息，但是这些根据标签路由的消息更为灵活。同时和邮件不同的是，这些消息没有固定的结构，甚至于可以直接存储二进制数据。不同于IM协议，AMQP隐去了消息的发送方和接受方。AMQP也没有“存在”这个概念。<br><b>对负载均衡来说，队列是绝佳方案.</b><br><br></p>
-<h6 id="生产者-Producer-和-消费者-Consumer"><a href="#生产者-Producer-和-消费者-Consumer" class="headerlink" title="生产者(Producer) 和 消费者(Consumer)"></a>生产者(Producer) 和 消费者(Consumer)</h6><p>生产者创建消息(消息包含两部分: 有效载荷[payload] 和 标签[label])，然后发布(Publish) 到代理服务器(RabbitMQ)</p>
-<p>消费者连接到代理服务器，并订阅到队列上。当消费者接受到消息时，它只得到了消息的一部分：有效载荷。在消息路由过程中，消息的标签并没有随有效载荷一同传递。<br><b>如果需要明确知道谁生产的AMQP消息的话，就要看生产者是否把消息方信息放入有效载荷中。</b></p>
-<h6 id="AMQP栈"><a href="#AMQP栈" class="headerlink" title="AMQP栈"></a>AMQP栈</h6><p><img src="https://www.rabbitmq.com/img/tutorials/intro/hello-world-example-routing.png"><br>AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b></p>
-<h6 id="消费者和生产者到底谁去创建队列？"><a href="#消费者和生产者到底谁去创建队列？" class="headerlink" title="消费者和生产者到底谁去创建队列？"></a>消费者和生产者到底谁去创建队列？</h6><p><b>如果你不能承担得起消息进入“黑洞”而丢失的话，你的生产者和消费者就都应该尝试去创建队列。</b></p>
-<h6 id="生产者创建消息"><a href="#生产者创建消息" class="headerlink" title="生产者创建消息"></a>生产者创建消息</h6><pre><code><figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/streadway/amqp"</span></span><br><span class="line"><span class="comment">// step 1. 创建 connection</span></span><br><span class="line">conn, err := amqp.Dial(<span class="string">"amqp://guest:guest@127.0.0.1:5672/"</span>)</span><br><span class="line"><span class="comment">// step 2. 获取 (信道)channel</span></span><br><span class="line">channel, err := conn.Channel()</span><br><span class="line"><span class="comment">// step 3. 在信道上声明交换器 exchange</span></span><br><span class="line">channel.ExchangeDeclare(</span><br><span class="line">    <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">    amqp.ExchangeDirect, <span class="comment">// exchange type</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// durable</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// autoDelete</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// internal</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// noWait</span></span><br><span class="line">    <span class="literal">nil</span>,                 <span class="comment">// args amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 4. 声明队列</span></span><br><span class="line">queue, err := ch.QueueDeclare(</span><br><span class="line">        <span class="string">"queue_name"</span>,    <span class="comment">// queue name</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// durable</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// delete when unused</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// exclusive</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// no-wait</span></span><br><span class="line">        <span class="literal">nil</span>,             <span class="comment">// arguments amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 5. 将队列绑定根据路由键绑定到交换器上</span></span><br><span class="line">channel.QueueBind(</span><br><span class="line">    queue.Name,          <span class="comment">// queue name</span></span><br><span class="line">    <span class="string">"route_key"</span>,         <span class="comment">// route key</span></span><br><span class="line">    <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">    <span class="literal">false</span>,               <span class="comment">// no-wait</span></span><br><span class="line">    <span class="literal">nil</span>,                 <span class="comment">// arguments amqp.Table</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// step 6. 将消息发送到交换器上，交换器会根据路由键将消息发送到对应的队列queue</span></span><br><span class="line">channel.Publish(</span><br><span class="line">        <span class="string">"exchange_name"</span>, <span class="comment">// exchange</span></span><br><span class="line">        <span class="string">"route_key"</span>,     <span class="comment">// routing key</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// mandatory</span></span><br><span class="line">        <span class="literal">false</span>,           <span class="comment">// immediate</span></span><br><span class="line">        amqp.Publishing&#123; <span class="comment">// message</span></span><br><span class="line">            ContentType: <span class="string">"text/plain"</span>,</span><br><span class="line">            Body:        []<span class="keyword">byte</span>(<span class="string">"hello world"</span>),</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="消费者订阅消息"><a href="#消费者订阅消息" class="headerlink" title="消费者订阅消息"></a>消费者订阅消息</h6><pre><code><figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">   <span class="keyword">import</span> <span class="string">"github.com/streadway/amqp"</span></span><br><span class="line">   <span class="comment">// step 1. 创建 connection</span></span><br><span class="line">   conn, err := amqp.Dial(<span class="string">"amqp://guest:guest@127.0.0.1:5672/"</span>)</span><br><span class="line">   <span class="comment">// step 2. 获取 (信道)channel</span></span><br><span class="line">   channel, err := conn.Channel()</span><br><span class="line">   <span class="comment">// step 3. 在信道上声明交换器 exchange</span></span><br><span class="line">   channel.ExchangeDeclare(</span><br><span class="line">       <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">       amqp.ExchangeDirect, <span class="comment">// exchange type</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// durable</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// autoDelete</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// internal</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// noWait</span></span><br><span class="line">       <span class="literal">nil</span>,                 <span class="comment">// args amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   <span class="comment">// step 4. 声明队列</span></span><br><span class="line">   queue, err := ch.QueueDeclare(</span><br><span class="line">           <span class="string">"queue_name"</span>,    <span class="comment">// queue name</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// durable</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// delete when unused</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// exclusive</span></span><br><span class="line">           <span class="literal">false</span>,           <span class="comment">// no-wait</span></span><br><span class="line">           <span class="literal">nil</span>,             <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   <span class="comment">// step 5. 将队列绑定根据路由键绑定到交换器上</span></span><br><span class="line">   channel.QueueBind(</span><br><span class="line">       queue.Name,          <span class="comment">// queue name</span></span><br><span class="line">       <span class="string">"route_key"</span>,         <span class="comment">// route key</span></span><br><span class="line">       <span class="string">"exchange_name"</span>,     <span class="comment">// exchange name</span></span><br><span class="line">       <span class="literal">false</span>,               <span class="comment">// no-wait</span></span><br><span class="line">       <span class="literal">nil</span>,                 <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">   forever := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">   <span class="comment">// step 6. 在信道上订阅队列</span></span><br><span class="line">   messages, err := channel.Consume(</span><br><span class="line">       queue.Name,           <span class="comment">// queue</span></span><br><span class="line">       <span class="string">""</span>,                   <span class="comment">// consumer</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// autoAck</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// exclusive</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// noLocal ：The noLocal flag is not supported by RabbitMQ.</span></span><br><span class="line">       <span class="literal">false</span>,                <span class="comment">// no-wait</span></span><br><span class="line">       <span class="literal">nil</span>,                  <span class="comment">// arguments amqp.Table</span></span><br><span class="line">   )</span><br><span class="line">  <span class="comment">// 开启一个 goruntine 获取消息内容 </span></span><br><span class="line">   <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">       <span class="keyword">for</span> message := <span class="keyword">range</span> messages &#123;</span><br><span class="line">               log.Printf(<span class="string">"Received a message: %s"</span>, message.Body)</span><br><span class="line">               message.Ack(<span class="literal">true</span>)</span><br><span class="line">       &#125;</span><br><span class="line">&#125;()</span><br><span class="line">   fmt.Println(<span class="string">"Please ctrl+c to stop"</span>)</span><br><span class="line">   &lt;-forever</span><br></pre></td></tr></table></figure>
-</code></pre>]]></content>
-      
-        <categories>
-            
-            <category> mq </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> rabbitmq queue </tag>
-            
-        </tags>
-        
-    </entry>
+
     
-    <entry>
-      <title><![CDATA[启动mysql - ERROR! without updating PID file]]></title>
-      <url>/2018/01/03/mysql-start-error/</url>
-      <content type="html"><![CDATA[<h5 id="mysql-开启出现这错误"><a href="#mysql-开启出现这错误" class="headerlink" title="mysql 开启出现这错误"></a>mysql 开启出现这错误</h5><p>Starting MySQL.. ERROR! The server quit without updating PID file (/www/server/data/localhost.localdomain.pid)</p>
-<pre><code>进入 /www/server/data/
-rm -rf ib_logfile* 
-rm -rf localhost.localdomain.err
-</code></pre>]]></content>
-      
-        <categories>
-            
-            <category> mysql </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> error </tag>
-            
-        </tags>
-        
-    </entry>
+</div>
+
+
+                
+
+                <!-- Post Comments -->
+                
+                    
+                
+            </div>
+
+            <!-- Post Prev & Next Nav -->
+            <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+    <!-- Prev Nav -->
     
-    <entry>
-      <title><![CDATA[开启https小绿锁 let's encrypt]]></title>
-      <url>/2018/01/02/let-s-encrypt/</url>
-      <content type="html"><![CDATA[<p>HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。即HTTP下加入SSL层，HTTPS的安全基础是SSL，因此加密的详细内容就需要SSL。</p>
-<h6 id="Let’s-Encrypt"><a href="#Let’s-Encrypt" class="headerlink" title="Let’s Encrypt"></a>Let’s Encrypt</h6><p>Let’s Encrypt是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X.509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。</p>
-<h6 id="获取-let’s-encrypt"><a href="#获取-let’s-encrypt" class="headerlink" title="获取 let’s encrypt"></a>获取 let’s encrypt</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/certbot/certbot.git</span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="安装ssl证书"><a href="#安装ssl证书" class="headerlink" title="安装ssl证书"></a>安装ssl证书</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./certbot-auto certonly --standalone -d example.com --email example@email.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># certbot-auto renew  重新安装之前存在的ssl证书</span></span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h6><pre><code><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">ssl</span>          <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/cert.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;</span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line">    <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_ciphers</span> ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#双向 ssl 认证</span></span><br><span class="line">    <span class="comment"># ssl_verify_client on;</span></span><br><span class="line">    <span class="comment"># ssl_client_certificate /etc/letsencrypt/live/example.com/cert.pem;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</code></pre>]]></content>
-      
-        <categories>
-            
-            <category> linux </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> https </tag>
-            
-        </tags>
-        
-    </entry>
+        <a href="/2018/01/04/mq-rabbitmq-exchange-and-durable/" id="post_nav-newer" class="prev-content">
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            新篇
+        </a>
     
-    <entry>
-      <title><![CDATA[你好，世界]]></title>
-      <url>/2018/01/01/hello-world/</url>
-      <content type="html"><![CDATA[<pre><code><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">我一直以为悲伤是一种美丽，一种壮丽，</span><br><span class="line">这世界让我如此失望，</span><br><span class="line">我经不起这风吹雨打的折磨，</span><br><span class="line">我寻找的结局，</span><br><span class="line">我追寻的是哭里的笑声，</span><br><span class="line">默默地完成生命的剩余</span><br></pre></td></tr></table></figure>
-</code></pre>]]></content>
-      
-        
-    </entry>
+
+    <!-- Section Spacer -->
+    <div class="section-spacer"></div>
+
+    <!-- Next Nav -->
     
-  
-  
-</search>
+        <a href="/2018/01/03/mq-rabbitmq-introduce/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
+    
+</nav>
+
+        </div>
+    </div>
+
+
+
+                    
+                        <!-- Overlay For Active Sidebar -->
+<div class="sidebar-overlay"></div>
+
+<!-- Material sidebar -->
+<aside id="sidebar" class="sidebar sidebar-colored sidebar-fixed-left" role="navigation">
+    <div id="sidebar-main">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header header-cover" style="background-image: url(/img/sidebar_header.jpg);">
+    <!-- Top bar -->
+    <div class="top-bar"></div>
+
+    <!-- Sidebar toggle button -->
+    <button type="button" class="sidebar-toggle mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" style="display: initial;" data-upgraded=",MaterialButton,MaterialRipple">
+        <i class="material-icons">clear_all</i>
+        <span class="mdl-button__ripple-container">
+            <span class="mdl-ripple">
+            </span>
+        </span>
+    </button>
+
+    <!-- Sidebar Avatar -->
+    <div class="sidebar-image">
+        <img src="/img/header.jpg" alt="anorz's avatar">
+    </div>
+
+    <!-- Sidebar Email -->
+    <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+        i@anorz.com
+        <b class="caret"></b>
+    </a>
+</div>
+
+
+        <!-- Sidebar Navigation  -->
+        <ul class="nav sidebar-nav">
+    <!-- User dropdown  -->
+    <li class="dropdown">
+        <ul id="settings-dropdown" class="dropdown-menu">
+            
+                <li>
+                    <a href="#" target="_blank" title="Email Me">
+                        
+                            <i class="material-icons sidebar-material-icons sidebar-indent-left1pc-element">email</i>
+                        
+                        Email Me
+                    </a>
+                </li>
+            
+        </ul>
+    </li>
+
+    <!-- Homepage -->
+    
+        <li id="sidebar-first-li">
+            <a href="/">
+                
+                    <i class="material-icons sidebar-material-icons">home</i>
+                
+                主页
+            </a>
+        </li>
+        
+            <li class="divider"></li>
+        
+    
+
+    <!-- Archives  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">inbox</i>
+                
+                    归档
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">6</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Categories  -->
+    
+        <li class="dropdown">
+            <a href="#" class="ripple-effect dropdown-toggle" data-toggle="dropdown">
+                
+                    <i class="material-icons sidebar-material-icons">chrome_reader_mode</i>
+                
+                分类
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                <a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">2</span></a>
+            </ul>
+        </li>
+        
+    
+
+    <!-- Pages  -->
+    
+
+    <!-- Article Number  -->
+    
+</ul>
+
+
+        <!-- Sidebar Footer -->
+        <!-- Sidebar Divider -->
+
+
+
+<!-- Help & Support -->
+<!--
+
+-->
+
+<!-- Feedback -->
+<!--
+
+-->
+
+<!-- About Theme -->
+<!--
+
+-->
+
+    </div>
+
+    <!-- Sidebar Image -->
+    
+    <span id="footer-image">
+        <a href="https://www.upyun.com/" target="_blank" title="upyun_logo">
+            <img src="/img/upyun_logo.svg" alt="upyun_logo"><!--
+     --></a>
+    </span>
+
+
+</aside>
+
+                    
+
+                    
+                        <!-- Footer Top Button -->
+                        <div id="back-to-top" class="toTop-wrap">
+    <a href="#top" class="toTop">
+        <i class="material-icons footer_top-i">expand_less</i>
+    </a>
+</div>
+
+                    
+
+                    <!--Footer-->
+<footer class="mdl-mini-footer" id="bottom">
+    
+        <!-- Paradox Footer Left Section -->
+        <div class="mdl-mini-footer--left-section sns-list">
+    <!-- Twitter -->
+    
+        <a href="https://twitter.com/twitter" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-twitter">
+                <span class="visuallyhidden">Twitter</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Facebook -->
+    
+        <a href="https://www.facebook.com/facebook" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-facebook">
+                <span class="visuallyhidden">Facebook</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Google + -->
+    
+        <a href="https://www.google.com/" target="_blank">
+            <button class="mdl-mini-footer--social-btn social-btn footer-sns-gplus">
+                <span class="visuallyhidden">Google Plus</span>
+            </button><!--
+     --></a>
+    
+
+    <!-- Weibo -->
+    
+
+    <!-- Instagram -->
+    
+
+    <!-- Tumblr -->
+    
+
+    <!-- Github -->
+    
+
+    <!-- LinkedIn -->
+    
+
+    <!-- Zhihu -->
+    
+
+    <!-- Bilibili -->
+    
+
+    <!-- Telegram -->
+    
+    
+    <!-- V2EX -->
+    
+</div>
+
+
+        <!--Copyright-->
+        <div id="copyright">
+            Copyright&nbsp;©<script type="text/javascript">var fd = new Date();document.write("&nbsp;" + fd.getFullYear() + "&nbsp;");</script>Anorz's Blog
+            
+                <br>
+                
+                    <a href="http://www.miitbeian.gov.cn" rel="nofollow">浙ICP备16020526号-1</a>
+                
+            
+        </div>
+
+        <!-- Paradox Footer Right Section -->
+
+        <div class="mdl-mini-footer--right-section">
+            <div>
+                <div class="footer-develop-div">Powered by <a href="#" target="_blank" class="footer-develop-a">anorz</a></div>
+            </div>
+        </div>
+
+        <script>
+  var tagEle = "querySelectorAll" in document ? document.querySelectorAll(".tag") : getClass("tag"),
+      paper = "querySelectorAll" in document ? document.querySelector(".tagBall") : getClass("tagBall")[0];
+
+      RADIUS = 100,
+      fallLength = 1000,
+      tags = [],
+      angleX = Math.PI / 1000,
+      angleY = Math.PI / 1000,
+      CX = paper.offsetWidth / 2,
+      CY = paper.offsetHeight / 2,
+      EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
+      EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
+  function getClass(className) {
+    var ele = document.getElementsByTagName("*");
+    var classEle = [];
+    for (var i = 0; i < ele.length; i++) {
+      var cn = ele[i].className;
+      if (cn === className) {
+        classEle.push(ele[i]);
+      }
+    }
+    return classEle;
+  }
+  function innit() {
+    for (var i = 0; i < tagEle.length; i++) {
+      var a, b;
+      var k = -1 + (2 * (i + 1) - 1) / tagEle.length;
+      var a = Math.acos(k);
+      var b = a * Math.sqrt(tagEle.length * Math.PI);
+      var x = RADIUS * Math.sin(a) * Math.cos(b);
+      var y = RADIUS * Math.sin(a) * Math.sin(b);
+      var z = RADIUS * Math.cos(a);
+      var t = new tag(tagEle[i], x, y, z);
+      tagEle[i].style.color = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
+      tags.push(t);
+      t.move();
+    }
+  }
+  Array.prototype.forEach = function(callback) {
+    for (var i = 0; i < this.length; i++) {
+      callback.call(this[i]);
+    }
+  }
+  function animate() {
+    rotateX();
+    rotateY();
+    tags.forEach(function() {
+      this.move();
+    });
+    requestAnimationFrame(animate);
+  }
+  if ("addEventListener" in window) {
+    paper.addEventListener("mousemove", function(event) {
+      var x = event.clientX - EX - CX;
+      var y = event.clientY - EY - CY;
+      // 转速
+      angleY = x * 0.00002;
+      angleX = y * 0.00002;
+    });
+  }
+  else {
+    paper.attachEvent("onmousemove", function(event) {
+      var x = event.clientX - EX - CX;
+      var y = event.clientY - EY - CY;
+       // 转速
+      angleY = x * 0.00002;
+      angleX = y * 0.00002;
+    });
+  }
+  function rotateX() {
+    var cos = Math.cos(angleX);
+    var sin = Math.sin(angleX);
+    tags.forEach(function() {
+      var y1 = this.y * cos - this.z * sin;
+      var z1 = this.z * cos + this.y * sin;
+      this.y = y1;
+      this.z = z1;
+    })
+  }
+  function rotateY() {
+    var cos = Math.cos(angleY);
+    var sin = Math.sin(angleY);
+    tags.forEach(function() {
+      var x1 = this.x * cos - this.z * sin;
+      var z1 = this.z * cos + this.x * sin;
+      this.x = x1;
+      this.z = z1;
+    })
+  }
+  var tag = function(ele, x, y, z) {
+    this.ele = ele;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+  tag.prototype = {
+    move: function() {
+      var scale = fallLength / (fallLength - this.z);
+      var alpha = (this.z + RADIUS) / (2 * RADIUS);
+      var left = this.x + CX - this.ele.offsetWidth / 2 + "px";
+      var top = this.y + CY - this.ele.offsetHeight / 2 + "px";
+      var transform = 'translate(' + left + ', ' + top + ') scale(' + scale + ')';
+      this.ele.style.opacity = alpha + 0.5;
+      this.ele.style.zIndex = parseInt(scale * 100);
+      this.ele.style.transform = transform;
+      this.ele.style.webkitTransform = transform;
+    }
+  }
+  innit();
+  animate();
+</script>
+    
+</footer>
+
+
+                    <!-- Import JS File -->
+
+    <script>lsloader.load("lazyload_js","/js/lazyload.min.js?1BcfzuNXqV+ntF6gq+5X3Q==", true)</script>
+
+
+
+    <script>lsloader.load("js_js","/js/js.min.js?V/53wGualMuiPM3xoetD5Q==", true)</script>
+
+
+
+    <script>lsloader.load("np_js","/js/nprogress.js?pl3Qhb9lvqR1FlyLUna1Yw==", true)</script>
+
+
+<script type="text/ls-javascript" id="NProgress-script">
+    NProgress.configure({
+        showSpinner: true
+    });
+    NProgress.start();
+    $('#nprogress .bar').css({
+        'background': '#29d'
+    });
+    $('#nprogress .peg').css({
+        'box-shadow': '0 0 10px #29d, 0 0 15px #29d'
+    });
+    $('#nprogress .spinner-icon').css({
+        'border-top-color': '#29d',
+        'border-left-color': '#29d'
+    });
+    setTimeout(function() {
+        NProgress.done();
+        $('.fade').removeClass('out');
+    }, 800);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UC Browser Compatible -->
+<script>
+	var agent = navigator.userAgent.toLowerCase();
+	if(agent.indexOf('ucbrowser')>0) {
+		document.write('<link rel="stylesheet" href="/css/uc.css">');
+	   alert('由于 UC 浏览器使用极旧的内核，而本网站使用了一些新的特性。\n为了您能更好的浏览，推荐使用 Chrome 或 Firefox 浏览器。');
+	}
+</script>
+
+<!-- Import prettify js  -->
+
+
+
+<!-- Window Load -->
+<!-- add class for prettify -->
+<script type="text/ls-javascript" id="window-load">
+    $(window).on('load', function() {
+        // Post_Toc parent position fixed
+        $('.post-toc-wrap').parent('.mdl-menu__container').css('position', 'fixed');
+    });
+
+    
+    
+</script>
+
+<!-- MathJax Load-->
+
+
+<!-- Bing Background -->
+
+
+<script type="text/ls-javascript" id="lazy-load">
+    // Offer LazyLoad
+    queue.offer(function(){
+        $('.lazy').lazyload({
+            effect : 'show'
+        });
+    });
+
+    // Start Queue
+    $(document).ready(function(){
+        setInterval(function(){
+            queue.execNext();
+        },200);
+    });
+</script>
+
+<!-- Custom Footer -->
+
+
+
+<script>
+    (function(){
+        var scriptList = document.querySelectorAll('script[type="text/ls-javascript"]')
+
+        for (var i = 0; i < scriptList.length; ++i) {
+            var item = scriptList[i];
+            lsloader.runInlineScript(item.id,item.id);
+        }
+    })()
+console.log('');
+</script>
+
+                </main>
+            </div>
+        </body>
+    
+</html>
