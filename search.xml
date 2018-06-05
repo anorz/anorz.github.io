@@ -419,7 +419,7 @@ rm -rf localhost.localdomain.err
     <entry>
       <title><![CDATA[你好，世界]]></title>
       <url>/2018/01/01/hello-world/</url>
-      <content type="html"><![CDATA[<pre><code><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">我一直以为悲伤是一种美丽，一种壮丽，</span><br><span class="line">这世界让我如此失望，</span><br><span class="line">我经不起这风吹雨打的折磨，</span><br><span class="line">我寻找的结局，</span><br><span class="line">我追寻的是哭里的笑声，</span><br><span class="line">默默地完成生命的剩余</span><br></pre></td></tr></table></figure>
+      <content type="html"><![CDATA[<pre><code><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">莫听穿林打叶声，何妨吟啸且徐行。竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。</span><br><span class="line"></span><br><span class="line">料峭春风吹酒醒，微冷，山头斜照却相迎。回首向来萧瑟处，归去，也无风雨也无晴。</span><br></pre></td></tr></table></figure>
 </code></pre>]]></content>
       
         
