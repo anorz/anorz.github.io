@@ -5,7 +5,51 @@
     <entry>
       <title><![CDATA[mysql 四种事务隔离级别]]></title>
       <url>/2018/03/18/mysql-transaction-isolation/</url>
-      <content type="html"></content>
+      <content type="html"><![CDATA[<h6 id="数据库事务的并发问题"><a href="#数据库事务的并发问题" class="headerlink" title="数据库事务的并发问题"></a>数据库事务的并发问题</h6><ul>
+<li>脏读<br>  事务A读取了事务B更新的数据，然后B回滚，导致A所得到的数据就是脏数据</li>
+<li>不可重复读<br>  事务A多次读取同一数据，事务B在事务A多次读取的过程中，对数据提交了更新，导致A多次读取的同一数据时，结果不一致(侧重于修改)</li>
+<li>幻读<br>  事务A在读取数据时读取了事务B插入的数据，然后事务B回滚后，导致数据A读取的时候出现幻读(幻读侧重于新增或删除)</li>
+</ul>
+<h6 id="MYSQL的四种事务隔离级别"><a href="#MYSQL的四种事务隔离级别" class="headerlink" title="MYSQL的四种事务隔离级别"></a>MYSQL的四种事务隔离级别</h6><table>
+<thead>
+<tr>
+<th>事务隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>读未提交(read-uncommitted)</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>不可重复读(read-committed)</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>可重复读(repeatable-read) <font color="red">mysql 默认级别 select @@tx_isolation;</font></td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>串行化(serializable)<font color="red"> 隔离级别并发性极低，开发中很少会用到</font></td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<h6 id="MYSQL的设置事务隔离级别"><a href="#MYSQL的设置事务隔离级别" class="headerlink" title="MYSQL的设置事务隔离级别"></a>MYSQL的设置事务隔离级别</h6><blockquote>
+<p>set session transaction isolation level read uncommitted;</p>
+</blockquote>
+]]></content>
       
         <categories>
             
@@ -23,9 +67,82 @@
     </entry>
     
     <entry>
+      <title><![CDATA[docker PXC 实践]]></title>
+      <url>/2018/03/15/docker-pxc/</url>
+      <content type="html"><![CDATA[<p><em>PXC（Percona XtraDB Cluster），Percona Xtradb Cluster的实现是在原mysql代码上通过Galera包将不同的mysql实例连接起来，实现了multi-master的集群架构</em>。<br>Percona XtraDBCluster提供的特性有：</p>
+<pre><code><figure class="highlight lsl"><table><tr><td class="code"><pre><span class="line"><span class="number">1.</span>同步复制，事务要么在所有节点提交或不提交。</span><br><span class="line"><span class="number">2.</span>多主复制，可以在任意节点进行写操作。</span><br><span class="line"><span class="number">3.</span>在从服务器上并行应用事件，真正意义上的并行复制。</span><br><span class="line"><span class="number">4.</span>节点自动配置。</span><br><span class="line"><span class="number">5.</span>数据一致性，不再是异步复制。</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="安装-pxc"><a href="#安装-pxc" class="headerlink" title="安装 pxc"></a>安装 pxc</h6><blockquote>
+<p>docker pull percona/percona-xtradb-cluster<br><em>一般使用 5.7 版本</em><br>docker pull percona/percona-xtradb-cluster:5.7</p>
+</blockquote>
+<p>percona-xtradb-cluster 名字太长，命令行中不方便输入，使用 tag 命令修改名称 </p>
+<blockquote>
+<p>docker tag percona/percona-xtradb-cluster:5.7 pxc</p>
+</blockquote>
+<h6 id="pxc单服务器配置"><a href="#pxc单服务器配置" class="headerlink" title="pxc单服务器配置"></a>pxc单服务器配置</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建网络</span></span><br><span class="line">docker network create pxc-network</span><br><span class="line"><span class="comment"># node1</span></span><br><span class="line">docker run -d \</span><br><span class="line">    -e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">    -e CLUSTER_NAME=cluster \</span><br><span class="line">    --name=node1 \</span><br><span class="line">    --net=pxc-network \</span><br><span class="line">    percona/percona-xtradb-cluster:5.7  </span><br><span class="line"><span class="comment"># node2</span></span><br><span class="line">docker run -d \</span><br><span class="line">    -e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">    -e CLUSTER_NAME=cluster \</span><br><span class="line">    -e CLUSTER_JOIN=node1 \</span><br><span class="line">    --name=node2 \</span><br><span class="line">    --net=pxc-network \</span><br><span class="line">    percona/percona-xtradb-cluster:5.7</span><br><span class="line"><span class="comment"># node3</span></span><br><span class="line">docker run -d \</span><br><span class="line">    -e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">    -e CLUSTER_NAME=cluster \</span><br><span class="line">    -e CLUSTER_JOIN=node1 \</span><br><span class="line">    --name=node3 \</span><br><span class="line">    --net=pxc-network \</span><br><span class="line">    percona/percona-xtradb-cluster:5.7</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="pxc多服务器配置"><a href="#pxc多服务器配置" class="headerlink" title="pxc多服务器配置"></a>pxc多服务器配置</h6><blockquote>
+<p><font color="red" size="1.5em"><strong>关闭防火墙或者允许3306, 4444, 4567和4568四个端口的连接</strong></font></p>
+<h2 id="关闭SElinux"><a href="#关闭SElinux" class="headerlink" title="关闭SElinux"></a><font color="red" size="1.5em"><strong>关闭SElinux</strong></font></h2><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"> <span class="comment"># 两台节点都创建挂载</span></span><br><span class="line"> docker volume create mysql</span><br><span class="line"> docker volume inspect mysql</span><br><span class="line"> <span class="comment"># node1 192.168.2.10</span></span><br><span class="line"> docker run -d \</span><br><span class="line">     --net=host \</span><br><span class="line">     -p 3306:3306 \</span><br><span class="line">     -v mysql:/var/lib/mysql/ \</span><br><span class="line">     -e CLUSTER_NAME=cluster \</span><br><span class="line">     -e MYSQL_ROOT_PASSWORD=123123  \</span><br><span class="line">     -e MYSQL_PROXY_PASSWORD=123123  \</span><br><span class="line">     --name=node1 \</span><br><span class="line">     --privileged  \</span><br><span class="line">     percona/percona-xtradb-cluster:5.7</span><br><span class="line"></span><br><span class="line"><span class="comment"># node2 192.168.2.11</span></span><br><span class="line"> docker run -d \</span><br><span class="line">     --net=host \</span><br><span class="line">     -p 3306:3306 \</span><br><span class="line">     -v mysql:/var/lib/mysql/ \</span><br><span class="line">     -e CLUSTER_NAME=cluster \</span><br><span class="line">     -e MYSQL_ROOT_PASSWORD=123123  \</span><br><span class="line">     -e MYSQL_PROXY_PASSWORD=123123  \</span><br><span class="line">     -e CLUSTER_JOIN=192.168.2.10 \</span><br><span class="line">     --name=node2 \</span><br><span class="line">     --privileged  \</span><br><span class="line">     percona/percona-xtradb-cluster:5.7</span><br></pre></td></tr></table></figure>
+</code></pre></blockquote>
+]]></content>
+      
+        <categories>
+            
+            <category> linux </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> https </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[docker 注意事项]]></title>
+      <url>/2018/03/14/docker/</url>
+      <content type="html"><![CDATA[<p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化</p>
+<h6 id="docker的安装"><a href="#docker的安装" class="headerlink" title="docker的安装"></a>docker的安装</h6><ol>
+<li>wget -qO- <a href="https://get.docker.com" target="_blank" rel="noopener">https://get.docker.com</a> | sh</li>
+<li><ol>
+<li>[centos7] yum install docker </li>
+<li>[ubuntu]  apt install docker.io</li>
+<li>[debian9]<br>   wget <a href="https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_17.03.0\~ce-0\~debian-stretch_amd64.deb" target="_blank" rel="noopener">https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_17.03.0\~ce-0\~debian-stretch_amd64.deb</a><br>   dpkg -i docker-ce_17.03.0~ce-0~debian-stretch_amd64.deb</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p>设置不输入 sudo</p>
+</blockquote>
+<pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG docker <span class="variable">$&#123;USER&#125;</span></span><br><span class="line"></span><br><span class="line">sudo service docker restart</span><br><span class="line"></span><br><span class="line">sudo newgrp - docker</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="容器启动后又关闭"><a href="#容器启动后又关闭" class="headerlink" title="容器启动后又关闭"></a>容器启动后又关闭</h6><p>当 docker run -d nginx 时发现容器启动后立即关闭<br>   原因 </p>
+<pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker后台运行，就必须有一个前台进程，主线程结束，容器就会退出</span><br><span class="line"></span><br><span class="line">改成： docker run -d -it nginx</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="连接容器"><a href="#连接容器" class="headerlink" title="连接容器"></a>连接容器</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">当 docker attach nginx 时，输入 <span class="built_in">exit</span> 或 ctrl+D 终止容器</span><br><span class="line"></span><br><span class="line">若依次输入 ctrl+P,ctrl+Q 则不会终止容器而只是退出链接</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="volume磁盘挂载"><a href="#volume磁盘挂载" class="headerlink" title="volume磁盘挂载"></a>volume磁盘挂载</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker volume create mysql_data</span><br><span class="line"></span><br><span class="line">docker volume inspect mysql_data</span><br><span class="line"></span><br><span class="line">当磁盘挂载不上是，需要关掉liunx的 seliunx</span><br><span class="line"></span><br><span class="line">查看 seliunx 状态:   sestate  -v</span><br><span class="line"></span><br><span class="line">3种方法： 1. setenforce  0</span><br><span class="line"></span><br><span class="line">        2.容器启动，添加--privileged=<span class="literal">true</span></span><br><span class="line">        </span><br><span class="line">        3. 修改 /etc/selinux/config 将SELINUX=enforcing改为SELINUX=disabled</span><br></pre></td></tr></table></figure>
+</code></pre>]]></content>
+      
+        <categories>
+            
+            <category> linux </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> https </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[消息队列 RabbitMQ -- 交换器类型与消息持久化]]></title>
       <url>/2018/01/04/mq-rabbitmq-exchange-and-durable/</url>
-      <content type="html"><![CDATA[<h6 id="四种交换器类型"><a href="#四种交换器类型" class="headerlink" title="四种交换器类型"></a>四种交换器类型</h6><p>上章中说到，AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b><br>rabbitmq 服务器会根据路由键将消息从交换器路由到列队，但是它是如何处理投递到多个队列的情况呢？<br>协议中定义的不同类型交换器发挥了作用。<br>一共四种类型： direct、fanout、topic、headers.<br><br></p>
+      <content type="html"><![CDATA[<p>四种交换器类型 direct、fanout、topic、headers</p>
+<h6 id="四种交换器类型"><a href="#四种交换器类型" class="headerlink" title="四种交换器类型"></a>四种交换器类型</h6><p>上章中说到，AMQP消息路由必须有三个部分： 交换器、队列、绑定。<br><b>生产者把消息发布到交换器上；消息最终到达队列，并被消费者解释；绑定决定了消息如何从路由器 路由到特定队列。</b><br>rabbitmq 服务器会根据路由键将消息从交换器路由到列队，但是它是如何处理投递到多个队列的情况呢？<br>协议中定义的不同类型交换器发挥了作用。<br>一共四种类型： direct、fanout、topic、headers.<br><br></p>
 <h6 id="direct"><a href="#direct" class="headerlink" title="direct"></a>direct</h6><p><img src="/img/direct_exchange.png"></p>
 <pre><code>DirectExchange是RabbitMQ Broker的默认Exchange.
 果然路由键匹配的话，消息就被投递到对应的队列。
@@ -64,7 +181,8 @@
     <entry>
       <title><![CDATA[内网穿透工具 - frp]]></title>
       <url>/2018/01/03/liunx-frp/</url>
-      <content type="html"><![CDATA[<p><a href="https://travis-ci.org/fatedier/frp" target="_blank" rel="noopener"><img src="https://travis-ci.org/fatedier/frp.svg?branch=master" alt="Build Status"></a></p>
+      <content type="html"><![CDATA[<p>frp 是一个可用于内网穿透的高性能的反向代理应用，支持 tcp, udp, http, https 协议。</p>
+<p><a href="https://travis-ci.org/fatedier/frp" target="_blank" rel="noopener"><img src="https://travis-ci.org/fatedier/frp.svg?branch=master" alt="Build Status"></a></p>
 <p>frp 是一个可用于内网穿透的高性能的反向代理应用，支持 tcp, udp, http, https 协议。</p>
 <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><!-- vim-markdown-toc GFM -->
 <ul>
@@ -341,6 +459,30 @@
     </entry>
     
     <entry>
+      <title><![CDATA[启动mysql - ERROR! without updating PID file]]></title>
+      <url>/2018/01/03/mysql-start-error/</url>
+      <content type="html"><![CDATA[<p>Starting MySQL.. ERROR! The server quit without updating PID file (/www/server/data/localhost.localdomain.pid)</p>
+<h5 id="mysql-开启出现这错误"><a href="#mysql-开启出现这错误" class="headerlink" title="mysql 开启出现这错误"></a>mysql 开启出现这错误</h5><pre><code>进入 /www/server/data/
+rm -rf ib_logfile* 
+rm -rf localhost.localdomain.err
+</code></pre>]]></content>
+      
+        <categories>
+            
+            <category> mysql </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> error </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[消息队列 RabbitMQ -- 介绍]]></title>
       <url>/2018/01/03/mq-rabbitmq-introduce/</url>
       <content type="html"><![CDATA[<p><a href="https://www.rabbitmq.org" target="_blank" rel="noopener">RabbitMQ</a> 是除了 Qpid 之外， 唯一实现了AMQP（高级消息协议：Advanced Message Queue Protocol）标准的代理服务器。<br>虽然AMQP像邮箱那样为离线消费者存储消息，但是这些根据标签路由的消息更为灵活。同时和邮件不同的是，这些消息没有固定的结构，甚至于可以直接存储二进制数据。不同于IM协议，AMQP隐去了消息的发送方和接受方。AMQP也没有“存在”这个概念。<br><b>对负载均衡来说，队列是绝佳方案.</b><br><br></p>
@@ -362,30 +504,6 @@
         <tags>
             
             <tag> rabbitmq queue </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[启动mysql - ERROR! without updating PID file]]></title>
-      <url>/2018/01/03/mysql-start-error/</url>
-      <content type="html"><![CDATA[<h5 id="mysql-开启出现这错误"><a href="#mysql-开启出现这错误" class="headerlink" title="mysql 开启出现这错误"></a>mysql 开启出现这错误</h5><p>Starting MySQL.. ERROR! The server quit without updating PID file (/www/server/data/localhost.localdomain.pid)</p>
-<pre><code>进入 /www/server/data/
-rm -rf ib_logfile* 
-rm -rf localhost.localdomain.err
-</code></pre>]]></content>
-      
-        <categories>
-            
-            <category> mysql </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> error </tag>
             
         </tags>
         

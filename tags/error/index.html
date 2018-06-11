@@ -200,7 +200,7 @@
     <!-- WebAPP Icons -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Anorz&#39;s Blog">
-    <meta name="msapplication-starturl" content="http://yoursite.com/tags/error/">
+    <meta name="msapplication-starturl" content="https://blog.anorz.com/tags/error/">
     <meta name="msapplication-navbutton-color" content="#607d8b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Anorz&#39;s Blog">
@@ -215,7 +215,7 @@
     
 
     <!-- The Open Graph protocol -->
-    <meta property="og:url" content="http://yoursite.com/tags/error/">
+    <meta property="og:url" content="https://blog.anorz.com/tags/error/">
     <meta property="og:type" content="blog">
     <meta property="og:title" content="标签: error | Anorz&#39;s Blog">
     <meta property="og:image" content="/img/favicon.png">
@@ -229,7 +229,7 @@
 
     <!-- Add canonical link for SEO -->
     
-        <link rel="canonical" href="http://yoursite.com/tags/error/index.html" />
+        <link rel="canonical" href="https://blog.anorz.com/tags/error/index.html" />
     
 
     <!-- Structured-data for SEO -->
@@ -300,7 +300,7 @@
     <!-- Post Excerpt -->
     <div class="mdl-color-text--grey-600 mdl-card__supporting-text post_entry-content">
         
-            
+            Starting MySQL.. ERROR! The server quit without updating PID file (/www/se...
         
         &nbsp;&nbsp;&nbsp;
         <span>
@@ -444,7 +444,7 @@
             </a>
             <ul class="dropdown-menu">
             <li>
-                <a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">6</span></a>
+                <a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">3</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">6</span></a>
             </ul>
         </li>
         
@@ -462,7 +462,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                <a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">2</span></a>
+                <a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">2</span></a>
             </ul>
         </li>
         
@@ -594,19 +594,7 @@
         </div>
 
         <script>
-  var tagEle = "querySelectorAll" in document ? document.querySelectorAll(".tag") : getClass("tag"),
-      paper = "querySelectorAll" in document ? document.querySelector(".tagBall") : getClass("tagBall")[0];
-
-      RADIUS = 100,
-      fallLength = 1000,
-      tags = [],
-      angleX = Math.PI / 1000,
-      angleY = Math.PI / 1000,
-      CX = paper.offsetWidth / 2,
-      CY = paper.offsetHeight / 2,
-      EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
-      EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
-  function getClass(className) {
+ function getClass(className) {
     var ele = document.getElementsByTagName("*");
     var classEle = [];
     for (var i = 0; i < ele.length; i++) {
@@ -617,6 +605,19 @@
     }
     return classEle;
   }
+
+  var tagEle = "querySelectorAll" in document ? document.querySelectorAll(".tag") : getClass("tag"),
+      paper = "querySelectorAll" in document ? document.querySelector(".tagBall") : getClass("tagBall")[0];
+      RADIUS = 100,
+      fallLength = 1000,
+      tags = [],
+      angleX = Math.PI / 1000,
+      angleY = Math.PI / 1000,
+      CX = paper.offsetWidth / 2,
+      CY = paper.offsetHeight / 2,
+      EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
+      EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
+ 
   function innit() {
     for (var i = 0; i < tagEle.length; i++) {
       var a, b;

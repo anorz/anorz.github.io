@@ -28,7 +28,7 @@
     
     <title>
         
-            开启https小绿锁 let&#39;s encrypt | 
+            docker PXC 实践 | 
         
         Anorz&#39;s Blog
     </title>
@@ -200,7 +200,7 @@
     <!-- WebAPP Icons -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Anorz&#39;s Blog">
-    <meta name="msapplication-starturl" content="https://blog.anorz.com/2018/01/02/let-s-encrypt/">
+    <meta name="msapplication-starturl" content="https://blog.anorz.com/2018/03/15/docker-pxc/">
     <meta name="msapplication-navbutton-color" content="#607d8b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Anorz&#39;s Blog">
@@ -215,16 +215,16 @@
     
 
     <!-- The Open Graph protocol -->
-    <meta property="og:url" content="https://blog.anorz.com/2018/01/02/let-s-encrypt/">
+    <meta property="og:url" content="https://blog.anorz.com/2018/03/15/docker-pxc/">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="开启https小绿锁 let&#39;s encrypt | Anorz&#39;s Blog">
+    <meta property="og:title" content="docker PXC 实践 | Anorz&#39;s Blog">
     <meta property="og:image" content="/img/favicon.png">
     <meta property="og:description" content="">
     <meta property="og:article:tag" content="https"> 
 
     
-        <meta property="article:published_time" content="Tue Jan 02 2018 00:00:00 GMT+0800">
-        <meta property="article:modified_time" content="Thu Jun 07 2018 19:45:43 GMT+0800">
+        <meta property="article:published_time" content="Thu Mar 15 2018 00:00:00 GMT+0800">
+        <meta property="article:modified_time" content="Fri Jun 08 2018 22:43:36 GMT+0800">
     
 
     <!-- The Twitter Card protocol -->
@@ -232,7 +232,7 @@
 
     <!-- Add canonical link for SEO -->
     
-        <link rel="canonical" href="https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html" />
+        <link rel="canonical" href="https://blog.anorz.com/2018/03/15/docker-pxc/index.html" />
     
 
     <!-- Structured-data for SEO -->
@@ -244,10 +244,10 @@
 {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "mainEntityOfPage": "https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html",
-    "headline": "开启https小绿锁 let's encrypt",
-    "datePublished": "Tue Jan 02 2018 00:00:00 GMT+0800",
-    "dateModified": "Thu Jun 07 2018 19:45:43 GMT+0800",
+    "mainEntityOfPage": "https://blog.anorz.com/2018/03/15/docker-pxc/index.html",
+    "headline": "docker PXC 实践",
+    "datePublished": "Thu Mar 15 2018 00:00:00 GMT+0800",
+    "dateModified": "Fri Jun 08 2018 22:43:36 GMT+0800",
     "author": {
         "@type": "Person",
         "name": "anorz",
@@ -335,7 +335,7 @@
     </button>
 
     <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
-        <ol class="post-toc"><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#Let’s-Encrypt"><span class="post-toc-number">1.</span> <span class="post-toc-text">Let’s Encrypt</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#获取-let’s-encrypt"><span class="post-toc-number">2.</span> <span class="post-toc-text">获取 let’s encrypt</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#安装ssl证书"><span class="post-toc-number">3.</span> <span class="post-toc-text">安装ssl证书</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#配置nginx"><span class="post-toc-number">4.</span> <span class="post-toc-text">配置nginx</span></a></li></ol>
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#安装-pxc"><span class="post-toc-number">1.</span> <span class="post-toc-text">安装 pxc</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#pxc单服务器配置"><span class="post-toc-number">2.</span> <span class="post-toc-text">pxc单服务器配置</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#pxc多服务器配置"><span class="post-toc-number">3.</span> <span class="post-toc-text">pxc多服务器配置</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#关闭SElinux"><span class="post-toc-number"></span> <span class="post-toc-text">关闭SElinux</span></a>
     </ul>
     
 
@@ -355,10 +355,10 @@
     <!-- Paradox Post Header -->
     
         <!-- Custom Thumbnail -->
-        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50" style="background-image:url(/img/index1.jpg)">
+        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50" style="background-image:url(/img/docker-pxc.jpeg)">
     
             <p class="article-headline-p">
-                开启https小绿锁 let's encrypt
+                docker PXC 实践
             </p>
         </div>
 
@@ -377,7 +377,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>anorz</strong>
-        <span>1月 02, 2018</span>
+        <span>3月 15, 2018</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -399,7 +399,7 @@
 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-qrcode-button">
     <li class="mdl-menu__item">在其它设备中阅读本文章</li>
     
-        <img src="https://pan.baidu.com/share/qrcode?w=246&h=246&url=https://blog.anorz.com/2018/01/02/let-s-encrypt/">
+        <img src="https://pan.baidu.com/share/qrcode?w=246&h=246&url=https://blog.anorz.com/2018/03/15/docker-pxc/">
     
 </ul>
 
@@ -430,7 +430,7 @@
 
     <!-- Share Weibo -->
     
-        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=开启https小绿锁 let&#39;s encrypt&url=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html&pic=https://blog.anorz.com/img/favicon.png&searchPic=false&style=simple" target="_blank">
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=docker PXC 实践&url=https://blog.anorz.com/2018/03/15/docker-pxc/index.html&pic=https://blog.anorz.com/img/favicon.png&searchPic=false&style=simple" target="_blank">
             <li class="mdl-menu__item">
                 分享到微博
             </li>
@@ -439,7 +439,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=开启https小绿锁 let&#39;s encrypt&url=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html&via=anorz" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=docker PXC 实践&url=https://blog.anorz.com/2018/03/15/docker-pxc/index.html&via=anorz" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -448,7 +448,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.anorz.com/2018/03/15/docker-pxc/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -457,7 +457,7 @@
 
     <!-- Share Google+ -->
     
-        <a class="post_share-link" href="https://plus.google.com/share?url=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html" target="_blank">
+        <a class="post_share-link" href="https://plus.google.com/share?url=https://blog.anorz.com/2018/03/15/docker-pxc/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Google+
             </li>
@@ -482,12 +482,21 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <p>HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。即HTTP下加入SSL层，HTTPS的安全基础是SSL，因此加密的详细内容就需要SSL。</p>
-<h6 id="Let’s-Encrypt"><a href="#Let’s-Encrypt" class="headerlink" title="Let’s Encrypt"></a>Let’s Encrypt</h6><p>Let’s Encrypt是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X.509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。</p>
-<h6 id="获取-let’s-encrypt"><a href="#获取-let’s-encrypt" class="headerlink" title="获取 let’s encrypt"></a>获取 let’s encrypt</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/certbot/certbot.git</span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="安装ssl证书"><a href="#安装ssl证书" class="headerlink" title="安装ssl证书"></a>安装ssl证书</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./certbot-auto certonly --standalone -d example.com --email example@email.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># certbot-auto renew  重新安装之前存在的ssl证书</span></span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h6><pre><code><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">ssl</span>          <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/cert.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;</span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line">    <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_ciphers</span> ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#双向 ssl 认证</span></span><br><span class="line">    <span class="comment"># ssl_verify_client on;</span></span><br><span class="line">    <span class="comment"># ssl_client_certificate /etc/letsencrypt/live/example.com/cert.pem;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</code></pre>
+        <p><em>PXC（Percona XtraDB Cluster），Percona Xtradb Cluster的实现是在原mysql代码上通过Galera包将不同的mysql实例连接起来，实现了multi-master的集群架构</em>。<br>Percona XtraDBCluster提供的特性有：</p>
+<pre><code><figure class="highlight lsl"><table><tr><td class="code"><pre><span class="line"><span class="number">1.</span>同步复制，事务要么在所有节点提交或不提交。</span><br><span class="line"><span class="number">2.</span>多主复制，可以在任意节点进行写操作。</span><br><span class="line"><span class="number">3.</span>在从服务器上并行应用事件，真正意义上的并行复制。</span><br><span class="line"><span class="number">4.</span>节点自动配置。</span><br><span class="line"><span class="number">5.</span>数据一致性，不再是异步复制。</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="安装-pxc"><a href="#安装-pxc" class="headerlink" title="安装 pxc"></a>安装 pxc</h6><blockquote>
+<p>docker pull percona/percona-xtradb-cluster<br><em>一般使用 5.7 版本</em><br>docker pull percona/percona-xtradb-cluster:5.7</p>
+</blockquote>
+<p>percona-xtradb-cluster 名字太长，命令行中不方便输入，使用 tag 命令修改名称 </p>
+<blockquote>
+<p>docker tag percona/percona-xtradb-cluster:5.7 pxc</p>
+</blockquote>
+<h6 id="pxc单服务器配置"><a href="#pxc单服务器配置" class="headerlink" title="pxc单服务器配置"></a>pxc单服务器配置</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建网络</span></span><br><span class="line">docker network create pxc-network</span><br><span class="line"><span class="comment"># node1</span></span><br><span class="line">docker run -d \</span><br><span class="line">    -e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">    -e CLUSTER_NAME=cluster \</span><br><span class="line">    --name=node1 \</span><br><span class="line">    --net=pxc-network \</span><br><span class="line">    percona/percona-xtradb-cluster:5.7  </span><br><span class="line"><span class="comment"># node2</span></span><br><span class="line">docker run -d \</span><br><span class="line">    -e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">    -e CLUSTER_NAME=cluster \</span><br><span class="line">    -e CLUSTER_JOIN=node1 \</span><br><span class="line">    --name=node2 \</span><br><span class="line">    --net=pxc-network \</span><br><span class="line">    percona/percona-xtradb-cluster:5.7</span><br><span class="line"><span class="comment"># node3</span></span><br><span class="line">docker run -d \</span><br><span class="line">    -e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">    -e CLUSTER_NAME=cluster \</span><br><span class="line">    -e CLUSTER_JOIN=node1 \</span><br><span class="line">    --name=node3 \</span><br><span class="line">    --net=pxc-network \</span><br><span class="line">    percona/percona-xtradb-cluster:5.7</span><br></pre></td></tr></table></figure>
+</code></pre><h6 id="pxc多服务器配置"><a href="#pxc多服务器配置" class="headerlink" title="pxc多服务器配置"></a>pxc多服务器配置</h6><blockquote>
+<p><font color="red" size="1.5em"><strong>关闭防火墙或者允许3306, 4444, 4567和4568四个端口的连接</strong></font></p>
+<h2 id="关闭SElinux"><a href="#关闭SElinux" class="headerlink" title="关闭SElinux"></a><font color="red" size="1.5em"><strong>关闭SElinux</strong></font></h2><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"> <span class="comment"># 两台节点都创建挂载</span></span><br><span class="line"> docker volume create mysql</span><br><span class="line"> docker volume inspect mysql</span><br><span class="line"> <span class="comment"># node1 192.168.2.10</span></span><br><span class="line"> docker run -d \</span><br><span class="line">     --net=host \</span><br><span class="line">     -p 3306:3306 \</span><br><span class="line">     -v mysql:/var/lib/mysql/ \</span><br><span class="line">     -e CLUSTER_NAME=cluster \</span><br><span class="line">     -e MYSQL_ROOT_PASSWORD=123123  \</span><br><span class="line">     -e MYSQL_PROXY_PASSWORD=123123  \</span><br><span class="line">     --name=node1 \</span><br><span class="line">     --privileged  \</span><br><span class="line">     percona/percona-xtradb-cluster:5.7</span><br><span class="line"></span><br><span class="line"><span class="comment"># node2 192.168.2.11</span></span><br><span class="line"> docker run -d \</span><br><span class="line">     --net=host \</span><br><span class="line">     -p 3306:3306 \</span><br><span class="line">     -v mysql:/var/lib/mysql/ \</span><br><span class="line">     -e CLUSTER_NAME=cluster \</span><br><span class="line">     -e MYSQL_ROOT_PASSWORD=123123  \</span><br><span class="line">     -e MYSQL_PROXY_PASSWORD=123123  \</span><br><span class="line">     -e CLUSTER_JOIN=192.168.2.10 \</span><br><span class="line">     --name=node2 \</span><br><span class="line">     --privileged  \</span><br><span class="line">     percona/percona-xtradb-cluster:5.7</span><br></pre></td></tr></table></figure>
+</code></pre></blockquote>
+
         
     
 
@@ -507,7 +516,7 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2018/01/03/mq-rabbitmq-introduce/" id="post_nav-newer" class="prev-content">
+        <a href="/2018/03/18/mysql-transaction-isolation/" id="post_nav-newer" class="prev-content">
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
                 <i class="material-icons">arrow_back</i>
             </button>
@@ -521,7 +530,7 @@
 
     <!-- Next Nav -->
     
-        <a href="/2018/01/01/hello-world/" id="post_nav-older" class="next-content">
+        <a href="/2018/03/14/docker/" id="post_nav-older" class="next-content">
             旧篇
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
