@@ -28,7 +28,7 @@
     
     <title>
         
-            开启https小绿锁 let&#39;s encrypt | 
+            golang gRPC 使用 | 
         
         Anorz&#39;s Blog
     </title>
@@ -39,7 +39,7 @@
 
     <meta name="format-detection" content="telephone=no"/>
     <meta name="description" itemprop="description" content="">
-    <meta name="keywords" content="anorz.com anorz blog,https">
+    <meta name="keywords" content="anorz.com anorz blog,grpc">
     <meta name="theme-color" content="#607d8b">
 
     <!-- Disable Fucking Bloody Baidu Tranformation -->
@@ -63,7 +63,7 @@
     <!-- Import CSS -->
     
         <style id="material_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("material_css","/css/material.min.css?Z7a72R1E4SxzBKR/WGctOA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
-        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?EAL189de9wrpmP4UBk7HgA==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
+        <style id="style_css"></style><script>if(typeof window.lsLoadCSSMaxNums === "undefined")window.lsLoadCSSMaxNums = 0;window.lsLoadCSSMaxNums++;lsloader.load("style_css","/css/style.min.css?JGn59e/hcNMWH+fRsurC8A==",function(){if(typeof window.lsLoadCSSNums === "undefined")window.lsLoadCSSNums = 0;window.lsLoadCSSNums++;if(window.lsLoadCSSNums == window.lsLoadCSSMaxNums)document.documentElement.style.display="";}, false)</script>
 
         
 
@@ -200,7 +200,7 @@
     <!-- WebAPP Icons -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Anorz&#39;s Blog">
-    <meta name="msapplication-starturl" content="https://blog.anorz.com/2018/01/02/let-s-encrypt/">
+    <meta name="msapplication-starturl" content="https://blog.anorz.com/2018/04/21/golang-grpc/">
     <meta name="msapplication-navbutton-color" content="#607d8b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Anorz&#39;s Blog">
@@ -215,16 +215,16 @@
     
 
     <!-- The Open Graph protocol -->
-    <meta property="og:url" content="https://blog.anorz.com/2018/01/02/let-s-encrypt/">
+    <meta property="og:url" content="https://blog.anorz.com/2018/04/21/golang-grpc/">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="开启https小绿锁 let&#39;s encrypt | Anorz&#39;s Blog">
+    <meta property="og:title" content="golang gRPC 使用 | Anorz&#39;s Blog">
     <meta property="og:image" content="/img/a_logo.png">
     <meta property="og:description" content="">
-    <meta property="og:article:tag" content="https"> 
+    <meta property="og:article:tag" content="grpc"> 
 
     
-        <meta property="article:published_time" content="Tue Jan 02 2018 00:00:00 GMT+0800">
-        <meta property="article:modified_time" content="Thu Jun 07 2018 19:45:43 GMT+0800">
+        <meta property="article:published_time" content="Sat Apr 21 2018 00:00:00 GMT+0800">
+        <meta property="article:modified_time" content="Wed Aug 22 2018 22:46:22 GMT+0800">
     
 
     <!-- The Twitter Card protocol -->
@@ -232,7 +232,7 @@
 
     <!-- Add canonical link for SEO -->
     
-        <link rel="canonical" href="https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html" />
+        <link rel="canonical" href="https://blog.anorz.com/2018/04/21/golang-grpc/index.html" />
     
 
     <!-- Structured-data for SEO -->
@@ -244,10 +244,10 @@
 {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "mainEntityOfPage": "https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html",
-    "headline": "开启https小绿锁 let's encrypt",
-    "datePublished": "Tue Jan 02 2018 00:00:00 GMT+0800",
-    "dateModified": "Thu Jun 07 2018 19:45:43 GMT+0800",
+    "mainEntityOfPage": "https://blog.anorz.com/2018/04/21/golang-grpc/index.html",
+    "headline": "golang gRPC 使用",
+    "datePublished": "Sat Apr 21 2018 00:00:00 GMT+0800",
+    "dateModified": "Wed Aug 22 2018 22:46:22 GMT+0800",
     "author": {
         "@type": "Person",
         "name": "anorz",
@@ -265,7 +265,7 @@
             "url": "/img/a_logo.png"
         }
     },
-    "keywords": ",httpsanorz.com anorz blog",
+    "keywords": ",grpcanorz.com anorz blog",
     "description": "",
 }
 </script>
@@ -335,7 +335,7 @@
     </button>
 
     <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
-        <ol class="post-toc"><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#Let’s-Encrypt"><span class="post-toc-number">1.</span> <span class="post-toc-text">Let’s Encrypt</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#获取-let’s-encrypt"><span class="post-toc-number">2.</span> <span class="post-toc-text">获取 let’s encrypt</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#安装ssl证书"><span class="post-toc-number">3.</span> <span class="post-toc-text">安装ssl证书</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#配置nginx"><span class="post-toc-number">4.</span> <span class="post-toc-text">配置nginx</span></a></li></ol>
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#protocol-buffers"><span class="post-toc-number">1.</span> <span class="post-toc-text">protocol buffers</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Install-goprotobuf"><span class="post-toc-number">2.</span> <span class="post-toc-text">Install goprotobuf</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Install-gogoprotobuf-性能更快"><span class="post-toc-number">3.</span> <span class="post-toc-text">Install gogoprotobuf [性能更快]</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Install-gRPC"><span class="post-toc-number">4.</span> <span class="post-toc-text">Install gRPC</span></a></li></ol>
     </ul>
     
 
@@ -355,10 +355,10 @@
     <!-- Paradox Post Header -->
     
         <!-- Custom Thumbnail -->
-        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50" style="background-image:url(/img/index1.jpg)">
+        <div class="post_thumbnail-custom mdl-card__media mdl-color-text--grey-50" style="background-image:url(/img/grpc-bg.png)">
     
             <p class="article-headline-p">
-                开启https小绿锁 let's encrypt
+                golang gRPC 使用
             </p>
         </div>
 
@@ -377,7 +377,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>anorz</strong>
-        <span>1月 02, 2018</span>
+        <span>4月 21, 2018</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -399,7 +399,7 @@
 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-qrcode-button">
     <li class="mdl-menu__item">在其它设备中阅读本文章</li>
     
-        <img src="https://pan.baidu.com/share/qrcode?w=246&h=246&url=https://blog.anorz.com/2018/01/02/let-s-encrypt/">
+        <img src="https://pan.baidu.com/share/qrcode?w=246&h=246&url=https://blog.anorz.com/2018/04/21/golang-grpc/">
     
 </ul>
 
@@ -413,7 +413,7 @@
     </button>
     <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
         <li class="mdl-menu__item">
-        <a class="post_tag-link" href="/tags/https/">https</a>
+        <a class="post_tag-link" href="/tags/grpc/">grpc</a>
     </ul>
     
 
@@ -430,7 +430,7 @@
 
     <!-- Share Weibo -->
     
-        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=开启https小绿锁 let&#39;s encrypt&url=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html&pic=https://blog.anorz.com/img/a_logo.png&searchPic=false&style=simple" target="_blank">
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=golang gRPC 使用&url=https://blog.anorz.com/2018/04/21/golang-grpc/index.html&pic=https://blog.anorz.com/img/a_logo.png&searchPic=false&style=simple" target="_blank">
             <li class="mdl-menu__item">
                 分享到微博
             </li>
@@ -439,7 +439,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=开启https小绿锁 let&#39;s encrypt&url=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html&via=anorz" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=golang gRPC 使用&url=https://blog.anorz.com/2018/04/21/golang-grpc/index.html&via=anorz" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -448,7 +448,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.anorz.com/2018/04/21/golang-grpc/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -457,7 +457,7 @@
 
     <!-- Share Google+ -->
     
-        <a class="post_share-link" href="https://plus.google.com/share?url=https://blog.anorz.com/2018/01/02/let-s-encrypt/index.html" target="_blank">
+        <a class="post_share-link" href="https://plus.google.com/share?url=https://blog.anorz.com/2018/04/21/golang-grpc/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Google+
             </li>
@@ -482,11 +482,19 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <p>HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。即HTTP下加入SSL层，HTTPS的安全基础是SSL，因此加密的详细内容就需要SSL。</p>
-<h6 id="Let’s-Encrypt"><a href="#Let’s-Encrypt" class="headerlink" title="Let’s Encrypt"></a>Let’s Encrypt</h6><p>Let’s Encrypt是2016年4月12日成立的一家证书授权中心，提供免费的传输层安全（TLS）X.509证书，通过自动化的过程消除目前安全网站证书需要手工创建，加密，签名，安装以及更新的复杂性。</p>
-<h6 id="获取-let’s-encrypt"><a href="#获取-let’s-encrypt" class="headerlink" title="获取 let’s encrypt"></a>获取 let’s encrypt</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/certbot/certbot.git</span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="安装ssl证书"><a href="#安装ssl证书" class="headerlink" title="安装ssl证书"></a>安装ssl证书</h6><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./certbot-auto certonly --standalone -d example.com --email example@email.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># certbot-auto renew  重新安装之前存在的ssl证书</span></span><br></pre></td></tr></table></figure>
-</code></pre><h6 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h6><pre><code><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">ssl</span>          <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/cert.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;</span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line">    <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_ciphers</span> ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#双向 ssl 认证</span></span><br><span class="line">    <span class="comment"># ssl_verify_client on;</span></span><br><span class="line">    <span class="comment"># ssl_client_certificate /etc/letsencrypt/live/example.com/cert.pem;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p><strong>gRPC</strong>  是一个高性能、开源和通用的 RPC 框架，面向移动和 HTTP/2 设计。目前提供 C、Java 和 Go 语言版本，分别是：grpc, grpc-java, grpc-go. 其中 C 版本支持 C, C++, Node.js, Python, Ruby, Objective-C, PHP 和 C# 支持.</p>
+<p>gRPC 基于 HTTP/2 标准设计，带来诸如双向流、流控、头部压缩、单 TCP 连接上的多复用请求等特。这些特性使得其在移动设备上表现更好，更省电和节省空间占用。</p>
+<p><img src="/img/grpc_concept_diagram_00.png"></p>
+<h3 id="protocol-buffers"><a href="#protocol-buffers" class="headerlink" title="protocol buffers"></a>protocol buffers</h3><p>gRPC 默认使用 protocol buffers，这是 Google 开源的一套成熟的结构数据序列化机制（当然也可以使用其他数据格式如 JSON）。正如你将在下方例子里所看到的，你用 proto files 创建 gRPC 服务，用 protocol buffers 消息类型来定义方法参数和返回类型。</p>
+<p><a href="/img/protobuffer.png" target="view_window"><img src="/img/protobuffer.png"> </a></p>
+<h3 id="Install-goprotobuf"><a href="#Install-goprotobuf" class="headerlink" title="Install goprotobuf"></a>Install goprotobuf</h3><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装protobuf库文件</span></span><br><span class="line">go get -u -v github.com/golang/protobuf/proto</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装插件 goprotobuf</span></span><br><span class="line">go get -u -v github.com/golang/protobuf/protoc-gen-go</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 对应系统版本的 protoc 工具 https://github.com/google/protobuf/releases</span></span><br><span class="line"><span class="comment"># windows</span></span><br><span class="line">wget https://github.com/google/protobuf/releases/download/v3.6.0/protoc-3.6.0-win32.zip</span><br><span class="line"><span class="comment"># 生成go文件</span></span><br><span class="line">protoc --go_out=. *.proto</span><br></pre></td></tr></table></figure>
+</code></pre><h3 id="Install-gogoprotobuf-性能更快"><a href="#Install-gogoprotobuf-性能更快" class="headerlink" title="Install gogoprotobuf [性能更快]"></a>Install gogoprotobuf [性能更快]</h3><p>gogoprotobuf有两个插件可以使用</p>
+<ul>
+<li>protoc-gen-gogo：和protoc-gen-go生成的文件差不多，性能也几乎一样(稍微快一点点)</li>
+<li>protoc-gen-gofast：生成的文件更复杂，性能也更高(快5-7倍)</li>
+</ul>
+<pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装 gogoprotobuf 库文件</span></span><br><span class="line">go get -u -v github.com/gogo/protobuf/proto</span><br><span class="line">go get -u -v github.com/gogo/protobuf/gogoproto</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装插件 gogoprotobuf</span></span><br><span class="line"><span class="comment"># gogo</span></span><br><span class="line">go get -u -v github.com/gogo/protobuf/protoc-gen-gogo</span><br><span class="line"><span class="comment"># gofast</span></span><br><span class="line">go get -u -v github.com/gogo/protobuf/protoc-gen-gofast</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 对应系统版本的 protoc 工具 https://github.com/google/protobuf/releases</span></span><br><span class="line"><span class="comment"># windows</span></span><br><span class="line">wget https://github.com/google/protobuf/releases/download/v3.6.0/protoc-3.6.0-win32.zip</span><br><span class="line"><span class="comment"># 生成go文件</span></span><br><span class="line"><span class="comment"># gogo</span></span><br><span class="line">protoc --gogo_out=. *.proto</span><br><span class="line"><span class="comment"># gofast</span></span><br><span class="line">protoc --gofast_out=. *.proto</span><br></pre></td></tr></table></figure>
+</code></pre><h3 id="Install-gRPC"><a href="#Install-gRPC" class="headerlink" title="Install gRPC"></a>Install gRPC</h3><pre><code><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装gRPC 库</span></span><br><span class="line">go get -u google.golang.org/grpc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 基于 protobuf 生成 gRPC 代码</span></span><br><span class="line"><span class="comment"># 官方生成</span></span><br><span class="line">protoc --go_out=plugins=grpc:. *.proto</span><br><span class="line"><span class="comment"># gogo 生成</span></span><br><span class="line">protoc --gogo_out=plugins=grpc:. *.proto</span><br><span class="line"><span class="comment"># gofast 生成</span></span><br><span class="line">protoc --gofast_out=plugins=grpc:. *.proto</span><br></pre></td></tr></table></figure>
 </code></pre>
         
     
@@ -507,21 +515,13 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2018/01/03/mysql-start-error/" id="post_nav-newer" class="prev-content">
-            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
-                <i class="material-icons">arrow_back</i>
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            新篇
-        </a>
-    
 
     <!-- Section Spacer -->
     <div class="section-spacer"></div>
 
     <!-- Next Nav -->
     
-        <a href="/2018/01/01/hello-world/" id="post_nav-older" class="next-content">
+        <a href="/2018/03/18/mysql-transaction-isolation/" id="post_nav-older" class="next-content">
             旧篇
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
@@ -615,7 +615,7 @@
             </a>
             <ul class="dropdown-menu">
             <li>
-                <a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">6</span></a>
+                <a class="sidebar_archives-link" href="/archives/2018/04/">四月 2018<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/03/">三月 2018<span class="sidebar_archives-count">4</span></a></li><li><a class="sidebar_archives-link" href="/archives/2018/01/">一月 2018<span class="sidebar_archives-count">7</span></a>
             </ul>
         </li>
         
@@ -633,7 +633,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                <a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">5</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">2</span></a>
+                <a class="sidebar_archives-link" href="/categories/docker/">docker<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/golang/">golang<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/golang/rpc/">rpc<span class="sidebar_archives-count">1</span></a></li><li><a class="sidebar_archives-link" href="/categories/http/">http<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/linux/">linux<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mq/">mq<span class="sidebar_archives-count">2</span></a></li><li><a class="sidebar_archives-link" href="/categories/mysql/">mysql<span class="sidebar_archives-count">2</span></a>
             </ul>
         </li>
         
@@ -773,117 +773,117 @@
         </div>
 
         <script>
- function getClass(className) {
-    var ele = document.getElementsByTagName("*");
-    var classEle = [];
-    for (var i = 0; i < ele.length; i++) {
-      var cn = ele[i].className;
-      if (cn === className) {
-        classEle.push(ele[i]);
-      }
-    }
-    return classEle;
-  }
+    //  function getClass(className) {
+    //     var ele = document.getElementsByTagName("*");
+    //     var classEle = [];
+    //     for (var i = 0; i < ele.length; i++) {
+    //       var cn = ele[i].className;
+    //       if (cn === className) {
+    //         classEle.push(ele[i]);
+    //       }
+    //     }
+    //     return classEle;
+    //   }
 
-  var tagEle = "querySelectorAll" in document ? document.querySelectorAll(".tag") : getClass("tag"),
-      paper = "querySelectorAll" in document ? document.querySelector(".tagBall") : getClass("tagBall")[0];
-      RADIUS = 100,
-      fallLength = 1000,
-      tags = [],
-      angleX = Math.PI / 1000,
-      angleY = Math.PI / 1000,
-      CX = paper.offsetWidth / 2,
-      CY = paper.offsetHeight / 2,
-      EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
-      EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
- 
-  function innit() {
-    for (var i = 0; i < tagEle.length; i++) {
-      var a, b;
-      var k = -1 + (2 * (i + 1) - 1) / tagEle.length;
-      var a = Math.acos(k);
-      var b = a * Math.sqrt(tagEle.length * Math.PI);
-      var x = RADIUS * Math.sin(a) * Math.cos(b);
-      var y = RADIUS * Math.sin(a) * Math.sin(b);
-      var z = RADIUS * Math.cos(a);
-      var t = new tag(tagEle[i], x, y, z);
-      tagEle[i].style.color = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
-      tags.push(t);
-      t.move();
-    }
-  }
-  Array.prototype.forEach = function(callback) {
-    for (var i = 0; i < this.length; i++) {
-      callback.call(this[i]);
-    }
-  }
-  function animate() {
-    rotateX();
-    rotateY();
-    tags.forEach(function() {
-      this.move();
-    });
-    requestAnimationFrame(animate);
-  }
-  if ("addEventListener" in window) {
-    paper.addEventListener("mousemove", function(event) {
-      var x = event.clientX - EX - CX;
-      var y = event.clientY - EY - CY;
-      // 转速
-      angleY = x * 0.00002;
-      angleX = y * 0.00002;
-    });
-  }
-  else {
-    paper.attachEvent("onmousemove", function(event) {
-      var x = event.clientX - EX - CX;
-      var y = event.clientY - EY - CY;
-       // 转速
-      angleY = x * 0.00002;
-      angleX = y * 0.00002;
-    });
-  }
-  function rotateX() {
-    var cos = Math.cos(angleX);
-    var sin = Math.sin(angleX);
-    tags.forEach(function() {
-      var y1 = this.y * cos - this.z * sin;
-      var z1 = this.z * cos + this.y * sin;
-      this.y = y1;
-      this.z = z1;
-    })
-  }
-  function rotateY() {
-    var cos = Math.cos(angleY);
-    var sin = Math.sin(angleY);
-    tags.forEach(function() {
-      var x1 = this.x * cos - this.z * sin;
-      var z1 = this.z * cos + this.x * sin;
-      this.x = x1;
-      this.z = z1;
-    })
-  }
-  var tag = function(ele, x, y, z) {
-    this.ele = ele;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-  tag.prototype = {
-    move: function() {
-      var scale = fallLength / (fallLength - this.z);
-      var alpha = (this.z + RADIUS) / (2 * RADIUS);
-      var left = this.x + CX - this.ele.offsetWidth / 2 + "px";
-      var top = this.y + CY - this.ele.offsetHeight / 2 + "px";
-      var transform = 'translate(' + left + ', ' + top + ') scale(' + scale + ')';
-      this.ele.style.opacity = alpha + 0.5;
-      this.ele.style.zIndex = parseInt(scale * 100);
-      this.ele.style.transform = transform;
-      this.ele.style.webkitTransform = transform;
-    }
-  }
-  innit();
-  animate();
+    //   var tagEle = "querySelectorAll" in document ? document.querySelectorAll(".tag") : getClass("tag"),
+    //       paper = "querySelectorAll" in document ? document.querySelector(".tagBall") : getClass("tagBall")[0];
+    //       RADIUS = 100,
+    //       fallLength = 1000,
+    //       tags = [],
+    //       angleX = Math.PI / 1000,
+    //       angleY = Math.PI / 1000,
+    //       CX = paper.offsetWidth / 2,
+    //       CY = paper.offsetHeight / 2,
+    //       EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
+    //       EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
+
+    //   function innit() {
+    //     for (var i = 0; i < tagEle.length; i++) {
+    //       var a, b;
+    //       var k = -1 + (2 * (i + 1) - 1) / tagEle.length;
+    //       var a = Math.acos(k);
+    //       var b = a * Math.sqrt(tagEle.length * Math.PI);
+    //       var x = RADIUS * Math.sin(a) * Math.cos(b);
+    //       var y = RADIUS * Math.sin(a) * Math.sin(b);
+    //       var z = RADIUS * Math.cos(a);
+    //       var t = new tag(tagEle[i], x, y, z);
+    //       tagEle[i].style.color = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
+    //       tags.push(t);
+    //       t.move();
+    //     }
+    //   }
+    //   Array.prototype.forEach = function(callback) {
+    //     for (var i = 0; i < this.length; i++) {
+    //       callback.call(this[i]);
+    //     }
+    //   }
+    //   function animate() {
+    //     rotateX();
+    //     rotateY();
+    //     tags.forEach(function() {
+    //       this.move();
+    //     });
+    //     requestAnimationFrame(animate);
+    //   }
+    //   if ("addEventListener" in window) {
+    //     paper.addEventListener("mousemove", function(event) {
+    //       var x = event.clientX - EX - CX;
+    //       var y = event.clientY - EY - CY;
+    //       // 转速
+    //       angleY = x * 0.00002;
+    //       angleX = y * 0.00002;
+    //     });
+    //   }
+    //   else {
+    //     paper.attachEvent("onmousemove", function(event) {
+    //       var x = event.clientX - EX - CX;
+    //       var y = event.clientY - EY - CY;
+    //        // 转速
+    //       angleY = x * 0.00002;
+    //       angleX = y * 0.00002;
+    //     });
+    //   }
+    //   function rotateX() {
+    //     var cos = Math.cos(angleX);
+    //     var sin = Math.sin(angleX);
+    //     tags.forEach(function() {
+    //       var y1 = this.y * cos - this.z * sin;
+    //       var z1 = this.z * cos + this.y * sin;
+    //       this.y = y1;
+    //       this.z = z1;
+    //     })
+    //   }
+    //   function rotateY() {
+    //     var cos = Math.cos(angleY);
+    //     var sin = Math.sin(angleY);
+    //     tags.forEach(function() {
+    //       var x1 = this.x * cos - this.z * sin;
+    //       var z1 = this.z * cos + this.x * sin;
+    //       this.x = x1;
+    //       this.z = z1;
+    //     })
+    //   }
+    //   var tag = function(ele, x, y, z) {
+    //     this.ele = ele;
+    //     this.x = x;
+    //     this.y = y;
+    //     this.z = z;
+    //   }
+    //   tag.prototype = {
+    //     move: function() {
+    //       var scale = fallLength / (fallLength - this.z);
+    //       var alpha = (this.z + RADIUS) / (2 * RADIUS);
+    //       var left = this.x + CX - this.ele.offsetWidth / 2 + "px";
+    //       var top = this.y + CY - this.ele.offsetHeight / 2 + "px";
+    //       var transform = 'translate(' + left + ', ' + top + ') scale(' + scale + ')';
+    //       this.ele.style.opacity = alpha + 0.5;
+    //       this.ele.style.zIndex = parseInt(scale * 100);
+    //       this.ele.style.transform = transform;
+    //       this.ele.style.webkitTransform = transform;
+    //     }
+    //   }
+    //   innit();
+    //   animate();
 </script>
     
 </footer>
